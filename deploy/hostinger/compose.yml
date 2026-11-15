@@ -1,0 +1,23 @@
+# Language Mirror on the Hostinger VPS: MariaDB with the lens_* tables (history included) + the Flask app.
+# Deployed by deploy.sh; Traefik (already on the VPS) routes the host and gets the certificate.
+name: junction-languagemirror
+services:
+  db:
+    image: mariadb:lts
+    restart: unless-stopped
+    environment: { MARIADB_ROOT_PASSWORD: wikitime, MARIADB_DATABASE: wikitime, MARIADB_USER: wikitime, MARIADB_PASSWORD: wikitime }
+    command: [--max-allowed-packet=256M, --innodb-buffer-pool-size=512M, --mhnsw-max-cache-size=256M, --character-set-server=utf8mb4, --collation-server=utf8mb4_uca1400_ai_ci]
+    volumes: [db:/var/lib/mysql]
+    healthcheck: { test: [CMD, healthcheck.sh, --connect, --innodb_initialized], interval: 5s, retries: 60 }
+  app:
+    build: { context: ./src, dockerfile: deploy/hostinger/Dockerfile }
+    restart: unless-stopped
+    env_file: [.env.app]
+    depends_on: { db: { condition: service_healthy } }
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.junction-languagemirror.rule=Host(`languagemirror.bobs.build`)
+      - traefik.http.routers.junction-languagemirror.entrypoints=websecure
+      - traefik.http.routers.junction-languagemirror.tls.certresolver=letsencrypt
+      - traefik.http.services.junction-languagemirror.loadbalancer.server.port=8000
+volumes: { db: {} }
