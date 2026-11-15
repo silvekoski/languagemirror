@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="demo-title" content="Immune System">
+<meta name="demo-desc" content="How fast does Wikipedia heal? 55,222 undone versions: how long vandalism survived each year, who made it, at what hour, and what readers saw in the meantime.">
+<meta name="demo-tags" content="reverts,time,FOR SYSTEM_TIME">
+<meta name="demo-order" content="9">
+<title>Immune System — Wikipedia Through Time</title>
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="immune.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="home" href="/">Wikipedia Through Time</a>
+  <span class="mute">/</span><span class="crumb">Immune System</span>
+  <span class="grow"></span>
+  <span class="mute mono" id="span"></span>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-text">
+      <h1>How fast does Finnish Wikipedia heal?</h1>
+      <p class="lede" id="lede">Every time someone restores an earlier text, the versions in between were rejected by the community.
+        We measured how long each of those bad versions stayed live, who wrote them and when, across 22 years of edit history.</p>
+      <p class="scope">History of Finland articles on Finnish Wikipedia, 2004–2026</p>
+    </div>
+    <div class="kpis" id="kpis"></div>
+  </section>
+
+  <section class="card big">
+    <div class="card-head">
+      <div>
+        <h2>Time to revert, per year</h2>
+        <p class="mute sub" id="v-sub">Each violin is one year's undone versions, by how long they survived (log scale). The line is the median.</p>
+      </div>
+      <div class="legend" id="v-legend"></div>
+    </div>
+    <div class="chart" id="violin"></div>
+  </section>
+
+  <div class="grid">
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <h2>Who gets reverted</h2>
+          <p class="mute sub" id="who-sub"></p>
+        </div>
+        <div class="chips" id="who-mode">
+          <button class="chip on" data-m="share">Share of undone versions</button>
+          <button class="chip" data-m="rate">Revert rate per edit</button>
+        </div>
+      </div>
+      <div class="chart" id="who"></div>
+      <div class="legend" id="who-legend"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <h2>The day shift</h2>
+          <p class="mute sub" id="hour-sub"></p>
+        </div>
+      </div>
+      <div class="chart" id="hours"></div>
+      <div class="legend" id="hour-legend"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <h2>Lifetime of bad versions</h2>
+          <p class="mute sub" id="hist-sub"></p>
+        </div>
+      </div>
+      <div class="chart" id="hist"></div>
+      <div class="legend" id="hist-legend"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <h2>Most vandalised articles</h2>
+          <p class="mute sub">Undone versions by others, 2004–2026. Bar: how many came from IPs or temporary accounts. Click one to open its history.</p>
+        </div>
+      </div>
+      <div class="arts" id="arts"></div>
+    </section>
+  </div>
+
+  <section class="card" id="detail" hidden>
+    <div class="card-head">
+      <div>
+        <h2 id="d-title"></h2>
+        <p class="mute sub" id="d-sub"></p>
+      </div>
+      <button class="chip" id="d-close" aria-label="Close">Close</button>
+    </div>
+    <div class="chart" id="d-chart"></div>
+    <div id="d-version" class="version"></div>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>The SQL: finding every undone version with window functions over <code>revision</code></summary>
+      <pre class="sql" id="sql-build"></pre>
+      <p class="mute small" id="method"></p>
+    </details>
+  </section>
+</main>
+<div class="tip" id="tip" hidden></div>
+<script type="module" src="immune.js"></script>
+</body>
+</html>

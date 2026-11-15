@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="demo-title" content="Knowledge Strata">
+<meta name="demo-desc" content="An article's text as geological layers: every sentence traced back to the edit that first wrote it, so you see 23 years of knowledge being deposited, buried and eroded. Dig to any moment with FOR SYSTEM_TIME AS OF.">
+<meta name="demo-tags" content="system versioning,history,text lineage">
+<meta name="demo-order" content="2">
+<title>Knowledge Strata — Wikipedia Through Time</title>
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="strata.css">
+</head>
+<body>
+<div class="topbar">
+  <a class="home" href="/">Wikipedia Through Time</a>
+  <span class="sep">/</span>
+  <span class="demo">Knowledge Strata</span>
+  <span class="grow"></span>
+  <div class="picker" id="picker">
+    <span class="ico">⌕</span>
+    <input type="search" id="pick" placeholder="Pick an article… (Talvisota, Kekkonen)" autocomplete="off" spellcheck="false" aria-label="Pick an article">
+    <div class="list panel" id="pickList"></div>
+  </div>
+</div>
+
+<main>
+  <section class="head">
+    <div class="titlebox">
+      <h1 id="title">&nbsp;</h1>
+    </div>
+    <div class="stats" id="stats"></div>
+    <p class="lede" id="lede">Every sentence of a Wikipedia article was written by someone, at some moment. Here each
+      sentence is traced back to the edit that first wrote it, and the article is drawn as rock: every band is text
+      from one year, <b>deposited</b>, buried under newer writing, sometimes <b>eroded</b> by later editors.
+      Click the strata to dig: the reader shows the article exactly as it stood, read from MariaDB with
+      <code>FOR SYSTEM_TIME AS OF</code>.</p>
+    <div class="finding" id="finding"></div>
+  </section>
+
+  <div class="grid">
+    <div class="left">
+      <section class="card panel">
+        <div class="hdr">
+          <div>
+            <h2>History flow</h2>
+            <div class="sub">Readable text in each sampled version, stacked by the year it was first written, oldest at the bottom. Click or drag to dig.</div>
+          </div>
+          <div class="sub" id="flowNote"></div>
+        </div>
+        <div id="flowWrap"><svg id="flow" role="img" aria-label="Stacked area chart of the article's text by year written"></svg></div>
+        <div class="legend">
+          <span>written</span><span id="y0"></span>
+          <div class="ramp" id="ramp"></div>
+          <span id="y1"></span>
+          <span class="ctl">
+            <button class="chip" id="play" title="Replay the article's history in the reader">▶ Replay</button>
+          </span>
+        </div>
+      </section>
+
+      <div class="row3">
+        <section class="card panel">
+          <h2>What survives</h2>
+          <div class="sub">Text first written each year (outline) and how much of it still stands today (fill).</div>
+          <svg id="surv" height="200"></svg>
+          <div class="sub survnote" id="survNote"></div>
+        </section>
+        <section class="card panel users">
+          <h2>Who wrote today's article</h2>
+          <div class="sub" id="usersSub"></div>
+          <div id="users"></div>
+          <div class="kinds" id="kinds"></div>
+          <div class="kindlab" id="kindlab"></div>
+        </section>
+        <section class="card panel events">
+          <h2>Landslides &amp; deposits</h2>
+          <div class="sub">The lasting edits that removed or wrote the most text. Click to dig there.</div>
+          <div id="events"></div>
+        </section>
+      </div>
+    </div>
+
+    <aside class="reader panel" id="reader">
+      <div class="rhead">
+        <div class="when"><small id="whenLab">The article as of</small><span id="when">—</span></div>
+        <div class="vmeta" id="vmeta"></div>
+        <div class="agebar" id="agebar"></div>
+        <div class="rctl">
+          <button class="chip" id="prev" title="Previous sampled version (←)">← older</button>
+          <button class="chip" id="next" title="Next sampled version (→)">newer →</button>
+          <button class="chip" id="today">today</button>
+          <span class="mute" style="font-size:12px;margin-left:auto">hover a sentence for its author</span>
+        </div>
+      </div>
+      <div class="body" id="body"></div>
+      <div class="foot">
+        <details id="sqlBox"><summary>The SQL</summary><div id="sql"></div></details>
+        <details class="method"><summary>How the lineage is traced</summary><div id="method"></div></details>
+      </div>
+    </aside>
+  </div>
+</main>
+<div class="tip" id="tip"></div>
+<script type="module" src="strata.js"></script>
+</body>
+</html>

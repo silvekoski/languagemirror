@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="demo-title" content="Growing Tree">
+<meta name="demo-desc" content="The category tree of Finnish history as a sunburst that grows from 59 KB in 2003 to 134 MB in 2026: every arc is the text of its articles as of that moment, rebuilt from all 862k versions.">
+<meta name="demo-tags" content="history,categories,growth,sunburst">
+<meta name="demo-order" content="7">
+<title>Growing Tree — Wikipedia Through Time</title>
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="growth.css">
+</head>
+<body>
+<div class="topbar">
+  <a class="home" href="/">Wikipedia Through Time</a>
+  <span class="sep">/</span>
+  <span class="demo">Growing Tree</span>
+  <div class="ctrls" id="ctrls">
+      <div class="ctrl"><span class="lbl">Size by</span>
+        <div class="seg" data-key="size">
+          <button class="chip on" data-v="b" title="Bytes of wikitext of the articles">Text</button>
+          <button class="chip" data-v="a" title="Number of articles that existed">Articles</button>
+          <button class="chip" data-v="e" title="Edits made so far (cumulative)">Edits</button>
+        </div></div>
+      <div class="ctrl"><span class="lbl">Colour</span>
+        <div class="seg" data-key="color">
+          <button class="chip on" data-v="branch" title="One hue per main branch">Branch</button>
+          <button class="chip" data-v="growth" title="Share of the size that was added in the 12 months before">New this year</button>
+          <button class="chip" data-v="density" title="Edits per 10 KB of text: how worked-over it is">Edits per text</button>
+        </div></div>
+      <div class="ctrl"><span class="lbl">Scale</span>
+        <div class="seg" data-key="scale">
+          <button class="chip on" data-v="grow" title="Disc area grows with the total size">Grows</button>
+          <button class="chip" data-v="share" title="Always a full disc: only the shares change">Shares</button>
+        </div>
+        <button class="chip on tog" id="ringsBtn" title="Annual rings">Rings</button>
+        <button class="chip on tog" id="labelsBtn" title="Arc labels">Labels</button>
+      </div>
+  </div>
+  <span class="grow"></span>
+  <div class="picker" id="picker">
+    <span class="ico">⌕</span>
+    <input type="search" id="pick" placeholder="Find a category or article…" autocomplete="off" spellcheck="false" aria-label="Find a category or article">
+    <div class="list panel" id="pickList"></div>
+  </div>
+</div>
+
+<main id="main">
+  <section class="intro">
+    <h1>How the history of Finland filled up Wikipedia, <span class="yrs">2003–2026</span></h1>
+    <p class="lede">Every arc is a category under <i>Suomen historia</i>, sized by the wikitext its articles held
+      <b>at that moment</b>, rebuilt from the metadata of all 862,076 versions in MariaDB. The rings are
+      the tree's real annual rings: the size the whole tree had at the end of each year.</p>
+    <div class="now">
+      <div class="date" id="date">&nbsp;</div>
+      <div class="kpis" id="kpis"></div>
+    </div>
+    <div class="finding" id="finding"></div>
+
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <section class="stage" id="stage">
+    <canvas id="sun"></canvas>
+    <button class="center" id="center" aria-label="Zoom out"></button>
+    <div class="hint mute" id="hint">Click an arc to zoom in · click the centre to zoom out</div>
+  </section>
+
+  <aside class="side panel" id="side"></aside>
+
+  <section class="time panel" id="time">
+    <div class="trow">
+      <button id="play" title="Play 2003 → 2026 (space)" aria-label="Play">▶</button>
+      <div class="tcap" id="tcap"></div>
+    </div>
+    <div class="twrap" id="twrap">
+      <canvas id="tl"></canvas>
+    </div>
+  </section>
+
+  <details class="sqlbox panel" id="sqlbox">
+    <summary>The SQL · how the tree is rebuilt for any date</summary>
+    <div class="sqlgrid" id="sqlgrid"></div>
+    <p class="note mute">The category graph is not a tree: 256 of the 1,475 categories have several parents. For the
+      layout every category hangs under the parent on its <b>shortest path</b> from <i>Suomen historia</i>
+      (breadth-first; ties go to the alphabetically first parent), and the panel lists its other parents.
+      An article in several categories is split evenly between them, so the arcs add up to the true total.
+      Categories are today's: Wikipedia's dumps carry no history for them.</p>
+  </details>
+</main>
+<div class="tip" id="tip" hidden></div>
+<script type="module" src="growth.js"></script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="demo-title" content="The Authors">
+<meta name="demo-desc" content="The people and bots who wrote Finland's history: editor generations layered like rock strata, 23-year careers of the top 120, the fade of anonymous editing and the rise of the bots that now save the latest version of a third of all articles.">
+<meta name="demo-tags" content="editors,bots,cohorts,system-versioning,time">
+<meta name="demo-order" content="5">
+<title>The Authors — Wikipedia Through Time</title>
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="authors.css">
+</head>
+<body>
+<nav class="topbar">
+  <a class="home" href="/">Wikipedia Through Time</a>
+  <span class="crumb">/</span><span class="crumb now">The Authors</span>
+  <span class="grow"></span>
+  <span class="mono mute" id="dbstat"></span>
+</nav>
+
+<header id="hero">
+  <div class="lede">
+    <h1>The <em>Authors</em></h1>
+    <p id="lede">Every version of every article on Finland's history carries a name. Loading…</p>
+  </div>
+  <div id="facts"></div>
+</header>
+
+<main>
+  <section id="geoRow">
+    <figure id="geo" class="panel">
+      <div class="fighead">
+        <div>
+          <h2>Geology of contributors</h2>
+          <p class="sub" id="geoSub">Registered editors active each month, layered by the year of their first edit here. Old generations sit at the bottom; each new layer is a new class of volunteers.</p>
+        </div>
+        <div class="ctl">
+          <div class="seg" id="geoMetric">
+            <button class="chip on" data-v="editors" title="Registered editors with at least one edit that month">Editors</button>
+            <button class="chip" data-v="active5" title="Registered editors with 5+ edits that month (Wikimedia's 'active editor')">Active ≥5</button>
+            <button class="chip" data-v="edits" title="Edits by registered editors">Edits</button>
+          </div>
+          <div class="seg" id="geoScale">
+            <button class="chip on" data-v="abs">Count</button>
+            <button class="chip" data-v="share">Share</button>
+          </div>
+        </div>
+      </div>
+      <svg id="geoSvg" role="img" aria-label="Stacked area of active editors per month by cohort"></svg>
+      <div class="cohortkey" id="cohortKey"></div>
+    </figure>
+    <figure id="ret" class="panel">
+      <h3>Who stays</h3>
+      <p class="sub">Share of each class still editing in later years. Rows: first year; columns: calendar year.</p>
+      <svg id="retSvg" role="img" aria-label="Cohort retention triangle"></svg>
+      <p class="note" id="retNote"></p>
+    </figure>
+  </section>
+
+  <section id="mult">
+    <figure class="panel sm" id="smAnon">
+      <h3><i class="sw" style="background:var(--anon)"></i>Anonymous share of edits</h3>
+      <svg></svg><p class="note"></p>
+    </figure>
+    <figure class="panel sm" id="smBot">
+      <h3><i class="sw" style="background:var(--bot)"></i>Bot share of edits</h3>
+      <svg></svg><div class="minikey"></div><p class="note"></p>
+    </figure>
+    <figure class="panel sm" id="smLast">
+      <h3>Who saved the latest version</h3>
+      <div class="lastbar"></div><p class="note"></p>
+    </figure>
+    <figure class="panel sm" id="smHour">
+      <h3>When they write <span class="mute small">· Helsinki time</span></h3>
+      <div class="seg mini" id="hourKind">
+        <button class="chip on" data-v="reg">People</button>
+        <button class="chip" data-v="bot">Bots</button>
+        <button class="chip" data-v="ano">Anonymous</button>
+      </div>
+      <svg></svg><p class="note"></p>
+    </figure>
+  </section>
+
+  <section id="careers">
+    <figure id="lanes" class="panel">
+      <div class="fighead">
+        <div>
+          <h2>Careers of the top <span id="nLanes">120</span></h2>
+          <p class="sub" id="lanesSub">One row per account, one cell per month; taller and brighter = more edits (1 to 400+). Coloured by class year, bots in green, edit totals on the right. Click a row for the profile.</p>
+        </div>
+        <div class="ctl">
+          <div class="seg" id="laneFilter">
+            <button class="chip on" data-v="all">All</button>
+            <button class="chip" data-v="reg">People</button>
+            <button class="chip" data-v="bot">Bots</button>
+          </div>
+          <select id="laneSort" title="Sort rows">
+            <option value="first">First edit</option>
+            <option value="edits">Total edits</option>
+            <option value="last">Last edit</option>
+            <option value="span">Career length</option>
+          </select>
+        </div>
+      </div>
+      <div id="laneWrap"><canvas id="laneCanvas"></canvas></div>
+    </figure>
+
+    <aside id="profile" class="panel">
+      <div class="find">
+        <input type="search" id="q" placeholder="Find any of 15,366 named editors…" autocomplete="off">
+        <div id="qres"></div>
+      </div>
+      <div id="prof"></div>
+    </aside>
+  </section>
+
+  <footer id="method">
+    <details>
+      <summary>How this is computed · The SQL</summary>
+      <div class="methodtext">
+        <p>Everything here comes from <code>revision</code>, the metadata of all 862,076 versions (who, when, size,
+          sha1, edit summary). <code>scripts/build_authors.py</code> streams it once into an in-memory DuckDB and writes
+          small <code>viz_authors_*</code> tables back to MariaDB. <b>Bots</b> are accounts whose name ends in “bot”.
+          <b>Anonymous</b> means logged out: an IP address, or since 2025 a temporary account (“~2025-…”).
+          A <b>class</b> is the year of an editor's first version in this topic. <b>Undone</b>: a later revert by
+          someone else restored the text from before the edit (sha1 match, spans up to 50 versions).
+          “First words” are read live from the system-versioned <code>article</code> table with
+          <code>FOR SYSTEM_TIME AS OF</code>.</p>
+        <pre class="sql" id="sqlOverview"></pre>
+      </div>
+    </details>
+  </footer>
+</main>
+
+<div class="tip" id="tip" hidden></div>
+<script type="module" src="authors.js"></script>
+</body>
+</html>

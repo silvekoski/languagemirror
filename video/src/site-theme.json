@@ -1,0 +1,33 @@
+{
+  "source": "http://127.0.0.1:3016/kielipeili.html",
+  "measured": "2026-11-15",
+  "title": "Language Mirror",
+  "url": "languagemirror.bobs.build",
+  "dark": false,
+  "colors": {
+    "bg": "#F1F5FC",
+    "panel": "#FFFFFF",
+    "panel2": "#F6F9FF",
+    "line": "#D7E0F4",
+    "line2": "#C7D0E6",
+    "text": "#0D1B3E",
+    "sub": "#6B7A99",
+    "dim": "#B3BBCC",
+    "accent": "#2F63E6"
+  },
+  "fonts": {
+    "display": "\"Inter Tight\", system-ui, sans-serif",
+    "text": "\"Inter Tight\", system-ui, sans-serif",
+    "faces": [
+      {
+        "family": "Inter Tight",
+        "file": "fonts/Inter_Tight-0.woff2",
+        "weight": "400",
+        "style": "normal"
+      }
+    ]
+  },
+  "radius": 26,
+  "glow": 1,
+  "logo": "site-logo.png"
+}

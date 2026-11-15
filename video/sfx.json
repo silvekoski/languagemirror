@@ -1,0 +1,10 @@
+{
+  "whoosh": { "prompt": "Soft airy cinematic whoosh transition, subtle and clean, no low rumble", "seconds": 1.2 },
+  "logo": { "prompt": "Elegant minimal logo reveal: soft deep hit with a shimmering glassy tail", "seconds": 3.0 },
+  "click": { "prompt": "Single soft crisp UI mouse click, minimal", "seconds": 0.5 },
+  "pop": { "prompt": "Soft glassy UI notification pop, minimal and quiet", "seconds": 0.6 },
+  "type": { "prompt": "Quiet soft laptop keyboard typing, a few light keystrokes", "seconds": 2.0 },
+  "ping": { "prompt": "Gentle success chime, two soft rising notes, minimal UI sound", "seconds": 1.0 },
+  "swell": { "prompt": "Short airy riser swell building gently, subtle, cinematic", "seconds": 1.6 },
+  "hit": { "prompt": "Low soft cinematic impact, short and clean, no reverb tail", "seconds": 1.0 }
+}

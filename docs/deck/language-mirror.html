@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Language Mirror · pitch deck</title>
+<!-- Same look as the pitch video (video/src/site-theme.json, measured from the live app): light, Inter Tight, blue #2F63E6.
+     Every number is from the live database (lens_* tables) on 15 Nov 2026; screenshots are frames of video/public/rec. -->
+<style>
+  @font-face { font-family: "Inter Tight"; src: url("lm/Inter_Tight-0.woff2") format("woff2"); font-weight: 100 900; }
+  @page { size: 1920px 1080px; margin: 0; }
+  :root { --bg: #F1F5FC; --ink: #0D1B3E; --ink2: #34446A; --mute: #6B7A99; --line: #D7E0F4; --blue: #2F63E6;
+    --red: #E5484D; --green: #218358; --amber: #A06A00; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font: 30px/1.4 "Inter Tight", system-ui, sans-serif;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .slide { position: relative; width: 1920px; height: 1080px; overflow: hidden; padding: 96px 120px 100px; break-after: page;
+    background: radial-gradient(1100px 700px at 85% -10%, rgba(70,120,255,.18), transparent 70%),
+                radial-gradient(900px 700px at 0% 100%, rgba(70,120,255,.08), transparent 70%), var(--bg); }
+  .slide:last-child { break-after: auto; }
+  h1 { font-size: 128px; line-height: 1; letter-spacing: -.035em; font-weight: 500; margin: 0; }
+  h2 { font-size: 72px; line-height: 1.06; letter-spacing: -.025em; font-weight: 500; margin: 0 0 40px; max-width: 1600px; }
+  .kicker { font-size: 24px; font-weight: 600; color: var(--blue); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 22px; }
+  .lede { font-size: 36px; color: var(--ink2); max-width: 1450px; margin: 0; }
+  .mute { color: var(--mute); }
+  .blue { color: var(--blue); }
+  .card { background: #fff; border-radius: 26px; box-shadow: inset 0 0 0 1px var(--line), 0 30px 60px -36px rgba(40,90,220,.45); }
+  .shot { position: absolute; border-radius: 22px; box-shadow: 0 0 0 1px var(--line), 0 40px 80px -40px rgba(30,70,200,.55); overflow: hidden; background: #fff; }
+  .shot img { display: block; width: 100%; }
+  .foot { position: absolute; left: 120px; right: 120px; bottom: 44px; display: flex; justify-content: space-between; font-size: 20px; color: var(--mute); }
+  .flag { height: 30px; width: 42px; object-fit: cover; border-radius: 5px; box-shadow: 0 0 0 1px rgba(0,0,0,.08); vertical-align: -6px; margin-right: 12px; }
+  .chip { display: inline-block; font-size: 24px; font-weight: 500; color: #fff; background: var(--blue); padding: 10px 18px; border-radius: 12px; margin: 0 10px 10px 0; }
+  .chip.soft { background: rgba(47,99,230,.1); color: var(--blue); }
+  code { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: .86em; }
+  .big { font-size: 112px; font-weight: 500; letter-spacing: -.03em; line-height: 1; }
+  .stat .lbl { font-size: 24px; color: var(--mute); margin-top: 10px; }
+  .row { display: flex; gap: 40px; }
+  .col { flex: 1; }
+  ul.plain { list-style: none; padding: 0; margin: 0; } ul.plain li { margin: 0 0 22px; padding-left: 44px; position: relative; color: var(--ink2); }
+  ul.plain li::before { content: ""; position: absolute; left: 0; top: 14px; width: 18px; height: 18px; border-radius: 50%; background: var(--blue); }
+
+  /* visual additions */
+  .media { position: absolute; overflow: hidden; border-radius: 22px; background: #fff;
+    box-shadow: 0 0 0 1px var(--line), 0 50px 90px -40px rgba(30,70,200,.6); }
+  .media img, .media video { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .media video { position: absolute; inset: 0; }
+  .bar3 { position: absolute; top: 0; left: 0; right: 0; height: 44px; background: #f6f8fd; border-bottom: 1px solid var(--line); z-index: 2; }
+  .bar3 i { position: absolute; top: 15px; width: 14px; height: 14px; border-radius: 50%; }
+  .media.win { padding-top: 44px; } .media.win video { top: 44px; height: calc(100% - 44px); }
+  .band { position: absolute; left: 0; right: 0; height: 640px; overflow: hidden; }
+  .band img, .band video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .band { -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,0) 0, #000 14%, #000 86%, rgba(0,0,0,0) 100%); mask-image: linear-gradient(180deg, rgba(0,0,0,0) 0, #000 14%, #000 86%, rgba(0,0,0,0) 100%); }
+  .band video { background: transparent; }
+  .ring { text-align: center; }
+  .ring svg { width: 210px; height: 210px; display: block; margin: 0 auto; }
+  .ring .n { font-size: 64px; font-weight: 500; letter-spacing: -.03em; }
+  .ring .l { font-size: 24px; color: var(--mute); margin-top: 6px; }
+  .bigflag { width: 150px; height: 104px; object-fit: cover; border-radius: 14px; box-shadow: 0 0 0 1px rgba(0,0,0,.08), 0 20px 40px -20px rgba(0,0,0,.35); }
+  .node { position: absolute; transform: translate(-50%,-50%); text-align: center; }
+  .tile { background: #fff; border-radius: 26px; padding: 40px 42px; box-shadow: inset 0 0 0 1px var(--line), 0 30px 60px -36px rgba(40,90,220,.45); }
+  .tile .ic { width: 76px; height: 76px; border-radius: 20px; background: rgba(47,99,230,.1); display: grid; place-items: center; margin-bottom: 26px; }
+  .tile .t { font-size: 36px; font-weight: 500; line-height: 1.15; } .tile .s { font-size: 24px; color: var(--mute); margin-top: 10px; }
+  @media print { video { display: none !important; } }
+</style>
+</head>
+<body>
+
+<section class="slide">
+  <div class="band" style="top:120px"><img src="lm/hero-globe-poster.jpg"><video autoplay muted loop playsinline poster="lm/hero-globe-poster.jpg"><source src="lm/hero-globe-1980.av1.mp4" type="video/mp4; codecs=av01.0.08M.08"><source src="lm/hero-globe-1320.h264.mp4" type="video/mp4"></video></div>
+  <div style="position:absolute;left:120px;top:300px;max-width:900px">
+    <div class="kicker">MariaDB · Wikipedia Through Time</div>
+    <h1 style="font-size:150px">Language<br>Mirror</h1>
+    <p class="lede" style="margin-top:36px;font-size:44px;color:var(--ink)">One story, every Wikipedia.</p>
+  </div>
+  <div style="position:absolute;left:120px;bottom:90px;display:flex;gap:14px;align-items:center"><img class="flag" src="lm/flags/fi.svg"><img class="flag" src="lm/flags/en.svg"><img class="flag" src="lm/flags/de.svg"><img class="flag" src="lm/flags/ru.svg"><img class="flag" src="lm/flags/uk.svg"><img class="flag" src="lm/flags/sv.svg"><span class="mute" style="font-size:26px;margin-left:16px">Junction 2026</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">The problem</div>
+  <h2>Same war. Different story.</h2>
+  <div class="row" style="margin-top:40px;gap:60px">
+    <div class="card col" style="padding:60px 60px 70px;text-align:center">
+      <img class="bigflag" src="lm/flags/ru.svg"><div class="mute" style="font-size:28px;margin-top:26px">Russian Wikipedia</div>
+      <div style="font-size:68px;font-weight:500;margin-top:24px;line-height:1.1;letter-spacing:-.02em">“a planned <span style="color:var(--red)">coup</span>”</div>
+    </div>
+    <div style="align-self:center;font-size:44px;color:var(--mute)">vs</div>
+    <div class="card col" style="padding:60px 60px 70px;text-align:center">
+      <img class="bigflag" src="lm/flags/fi.svg"><div class="mute" style="font-size:28px;margin-top:26px">Finnish Wikipedia</div>
+      <div style="font-size:68px;font-weight:500;margin-top:24px;line-height:1.1;letter-spacing:-.02em">“a <span class="blue">power struggle</span>”</div>
+    </div>
+  </div>
+  <p class="lede" style="margin-top:60px;text-align:center;max-width:none">Finnish Civil War, 1918. Nobody reads six Wikipedias side by side.</p>
+  <div class="foot"><span>Quotes checked word for word against the stored article text</span><span>2</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">The idea</div>
+  <h2 style="font-size:64px">No edition is the truth.</h2>
+  <div style="position:absolute;left:120px;top:250px;width:1120px;height:800px">
+    <svg width="1120" height="800" style="position:absolute;inset:0"><line x1="330" y1="250" x2="560" y2="405" stroke="#2F63E6" stroke-opacity=".35" stroke-width="4" stroke-dasharray="2 12" stroke-linecap="round"/><line x1="560" y1="170" x2="560" y2="405" stroke="#2F63E6" stroke-opacity=".35" stroke-width="4" stroke-dasharray="2 12" stroke-linecap="round"/><line x1="790" y1="250" x2="560" y2="405" stroke="#2F63E6" stroke-opacity=".35" stroke-width="4" stroke-dasharray="2 12" stroke-linecap="round"/><line x1="330" y1="560" x2="560" y2="405" stroke="#2F63E6" stroke-opacity=".35" stroke-width="4" stroke-dasharray="2 12" stroke-linecap="round"/><line x1="560" y1="640" x2="560" y2="405" stroke="#2F63E6" stroke-opacity=".35" stroke-width="4" stroke-dasharray="2 12" stroke-linecap="round"/><line x1="790" y1="560" x2="560" y2="405" stroke="#2F63E6" stroke-opacity=".35" stroke-width="4" stroke-dasharray="2 12" stroke-linecap="round"/><line x1="640" y1="405" x2="1000" y2="405" stroke="#2F63E6" stroke-width="5" stroke-linecap="round"/><path d="M985 390 L1005 405 L985 420" fill="none" stroke="#2F63E6" stroke-width="5" stroke-linecap="round"/></svg>
+    <div class="node" style="left:330px;top:250px"><img class="bigflag" src="lm/flags/fi.svg"></div><div class="node" style="left:560px;top:170px"><img class="bigflag" src="lm/flags/en.svg"></div><div class="node" style="left:790px;top:250px"><img class="bigflag" src="lm/flags/de.svg"></div><div class="node" style="left:330px;top:560px"><img class="bigflag" src="lm/flags/ru.svg"></div><div class="node" style="left:560px;top:640px"><img class="bigflag" src="lm/flags/uk.svg"></div><div class="node" style="left:790px;top:560px"><img class="bigflag" src="lm/flags/sv.svg"></div>
+    <div class="node" style="left:560px;top:405px;width:200px;height:200px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;box-shadow:0 30px 60px -20px rgba(47,99,230,.7)"><div style="font-size:30px;font-weight:600;line-height:1.15">consensus<div style="font-size:20px;font-weight:400;opacity:.85;margin-top:6px">told by ≥ 3</div></div></div>
+    <div class="node tile" style="left:1080px;top:405px;width:260px;padding:30px"><div class="t" style="font-size:32px">sources</div><div class="s">cited pages + independent web</div></div>
+  </div>
+  <div style="position:absolute;right:120px;top:300px;width:520px">
+    <div class="mute" style="font-size:26px;margin-bottom:18px">index per edition</div>
+    <div style="display:flex;height:84px;border-radius:18px;overflow:hidden;font-size:24px;color:#fff;font-weight:600">
+      <div style="flex:5;background:#2F63E6;display:grid;place-items:center">50</div><div style="flex:3;background:#6E95F2;display:grid;place-items:center">30</div><div style="flex:2;background:#A9C1F8;display:grid;place-items:center">20</div></div>
+    <div style="display:flex;font-size:24px;color:var(--ink2);margin-top:14px"><div style="flex:5">coverage</div><div style="flex:3">agreement</div><div style="flex:2">sourcing</div></div>
+    <p class="mute" style="font-size:26px;margin-top:60px">Every card shows its own formula, so the score can be defended line by line.</p>
+  </div>
+  <div class="foot"><span>app/lens_engine.py</span><span>3</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">Scores</div>
+  <h2 style="font-size:64px">Who tells the whole story?</h2>
+  <div style="display:grid;grid-template-columns:repeat(3,240px);gap:40px 30px;position:absolute;left:120px;top:300px"><div class="ring"><svg viewBox="0 0 210 210"><circle cx="105" cy="105" r="88" fill="#fff" stroke="#E3EAF8" stroke-width="18"/><circle cx="105" cy="105" r="88" fill="none" stroke="var(--blue)" stroke-width="18" stroke-linecap="round" stroke-dasharray="486.6 552.9" transform="rotate(-90 105 105)"/><text x="105" y="124" text-anchor="middle" font-size="58" font-weight="500" fill="#0D1B3E" font-family="Inter Tight">88</text></svg><div class="l"><img class="flag" src="lm/flags/fi.svg">Finnish</div></div><div class="ring"><svg viewBox="0 0 210 210"><circle cx="105" cy="105" r="88" fill="#fff" stroke="#E3EAF8" stroke-width="18"/><circle cx="105" cy="105" r="88" fill="none" stroke="var(--blue)" stroke-width="18" stroke-linecap="round" stroke-dasharray="464.5 552.9" transform="rotate(-90 105 105)"/><text x="105" y="124" text-anchor="middle" font-size="58" font-weight="500" fill="#0D1B3E" font-family="Inter Tight">84</text></svg><div class="l"><img class="flag" src="lm/flags/en.svg">English</div></div><div class="ring"><svg viewBox="0 0 210 210"><circle cx="105" cy="105" r="88" fill="#fff" stroke="#E3EAF8" stroke-width="18"/><circle cx="105" cy="105" r="88" fill="none" stroke="var(--blue)" stroke-width="18" stroke-linecap="round" stroke-dasharray="392.6 552.9" transform="rotate(-90 105 105)"/><text x="105" y="124" text-anchor="middle" font-size="58" font-weight="500" fill="#0D1B3E" font-family="Inter Tight">71</text></svg><div class="l"><img class="flag" src="lm/flags/de.svg">German</div></div><div class="ring"><svg viewBox="0 0 210 210"><circle cx="105" cy="105" r="88" fill="#fff" stroke="#E3EAF8" stroke-width="18"/><circle cx="105" cy="105" r="88" fill="none" stroke="#6E95F2" stroke-width="18" stroke-linecap="round" stroke-dasharray="331.8 552.9" transform="rotate(-90 105 105)"/><text x="105" y="124" text-anchor="middle" font-size="58" font-weight="500" fill="#0D1B3E" font-family="Inter Tight">60</text></svg><div class="l"><img class="flag" src="lm/flags/ru.svg">Russian</div></div><div class="ring"><svg viewBox="0 0 210 210"><circle cx="105" cy="105" r="88" fill="#fff" stroke="#E3EAF8" stroke-width="18"/><circle cx="105" cy="105" r="88" fill="none" stroke="#A9C1F8" stroke-width="18" stroke-linecap="round" stroke-dasharray="298.6 552.9" transform="rotate(-90 105 105)"/><text x="105" y="124" text-anchor="middle" font-size="58" font-weight="500" fill="#0D1B3E" font-family="Inter Tight">54</text></svg><div class="l"><img class="flag" src="lm/flags/uk.svg">Ukrainian</div></div><div class="ring"><svg viewBox="0 0 210 210"><circle cx="105" cy="105" r="88" fill="#fff" stroke="#E3EAF8" stroke-width="18"/><circle cx="105" cy="105" r="88" fill="none" stroke="#A9C1F8" stroke-width="18" stroke-linecap="round" stroke-dasharray="293.0 552.9" transform="rotate(-90 105 105)"/><text x="105" y="124" text-anchor="middle" font-size="58" font-weight="500" fill="#0D1B3E" font-family="Inter Tight">53</text></svg><div class="l"><img class="flag" src="lm/flags/sv.svg">Swedish</div></div></div>
+  <div class="media win" style="right:80px;top:150px;width:940px;height:631px"><div class="bar3"><i style="left:20px;background:#ff5f57"></i><i style="left:44px;background:#febc2e"></i><i style="left:68px;background:#28c840"></i></div><img src="lm/scores.jpg"><video src="lm/clips/scores.mp4" poster="lm/scores.jpg" autoplay muted loop playsinline></video></div>
+  <p class="mute" style="position:absolute;right:80px;top:810px;width:940px;font-size:26px">Swedish tells two thirds of the shared story and cites the least.</p>
+  <div class="foot"><span>Suomen sisällissota (Finnish Civil War), six editions · live data</span><span>4</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">Disagreements, checked</div>
+  <h2 style="font-size:64px">When did the war end?</h2>
+  <div style="position:absolute;left:120px;top:330px;width:1680px;height:300px">
+    <div style="position:absolute;left:0;right:0;top:150px;height:10px;border-radius:5px;background:linear-gradient(90deg,#A9C1F8,#2F63E6)"></div>
+    <div style="position:absolute;left:0;right:0;top:175px"><div style="position:absolute;left:0px;top:0;transform:translateX(-50%);text-align:center;font-size:22px;color:var(--mute);white-space:nowrap"><div style="width:2px;height:22px;background:var(--line);margin:0 auto 10px"></div>1 Apr</div><div style="position:absolute;left:385px;top:0;transform:translateX(-50%);text-align:center;font-size:22px;color:var(--mute);white-space:nowrap"><div style="width:2px;height:22px;background:var(--line);margin:0 auto 10px"></div>15 Apr</div><div style="position:absolute;left:826px;top:0;transform:translateX(-50%);text-align:center;font-size:22px;color:var(--mute);white-space:nowrap"><div style="width:2px;height:22px;background:var(--line);margin:0 auto 10px"></div>1 May</div><div style="position:absolute;left:1211px;top:0;transform:translateX(-50%);text-align:center;font-size:22px;color:var(--mute);white-space:nowrap"><div style="width:2px;height:22px;background:var(--line);margin:0 auto 10px"></div>15 May</div><div style="position:absolute;left:1680px;top:0;transform:translateX(-50%);text-align:center;font-size:22px;color:var(--mute);white-space:nowrap"><div style="width:2px;height:22px;background:var(--line);margin:0 auto 10px"></div>1 Jun</div></div>
+    <div style="position:absolute;left:936px;top:0;transform:translateX(-50%);text-align:center">
+      <div style="font-size:30px;font-weight:600;color:var(--red)">5 May</div><div style="margin:8px 0"><img class="flag" src="lm/flags/de.svg"></div><div style="width:6px;height:52px;background:var(--red);margin:0 auto;border-radius:3px"></div></div>
+    <div style="position:absolute;left:1211px;top:0;transform:translateX(-50%);text-align:center">
+      <div style="font-size:30px;font-weight:600;color:var(--green)">15 May</div><div style="margin:8px 0;white-space:nowrap"><img class="flag" src="lm/flags/fi.svg"><img class="flag" src="lm/flags/en.svg"><img class="flag" src="lm/flags/ru.svg"><img class="flag" src="lm/flags/sv.svg"></div><div style="width:6px;height:52px;background:var(--green);margin:0 auto;border-radius:3px"></div></div>
+  </div>
+  <div style="position:absolute;left:120px;top:640px;width:760px">
+    <div class="chip" style="background:var(--green)">sources back 15 May</div><div class="chip soft">found with Context.dev</div>
+    <div style="display:flex;height:64px;border-radius:16px;overflow:hidden;margin-top:40px;font-size:24px;font-weight:600;color:#fff">
+      <div style="flex:320;background:var(--green);display:grid;place-items:center">320 backed</div><div style="flex:131;background:var(--red);display:grid;place-items:center">131</div><div style="flex:184;background:#C9D4EC;display:grid;place-items:center;color:var(--ink2)">184 open</div></div>
+    <div class="mute" style="font-size:24px;margin-top:14px">635 claims across 19 articles, each checked against sources. The war began 27 January.</div>
+  </div>
+  <div class="media win" style="right:80px;top:580px;width:680px;height:469px"><div class="bar3"><i style="left:20px;background:#ff5f57"></i><i style="left:44px;background:#febc2e"></i><i style="left:68px;background:#28c840"></i></div><img src="lm/disagree.jpg"><video src="lm/clips/disagree.mp4" poster="lm/disagree.jpg" autoplay muted loop playsinline></video></div>
+  <div class="foot"><span></span><span>5</span></div>
+</section>
+
+<section class="slide" style="padding-top:80px">
+  <div style="display:flex;align-items:baseline;justify-content:space-between"><h2 style="font-size:64px;margin:0">Both articles, paragraph by paragraph.</h2><div class="kicker" style="margin:0">The mirror</div></div>
+  <div style="margin-top:22px"><span class="chip" style="background:#E5484D">133 missing content</span><span class="chip" style="background:#A06A00">22 no equivalent concept</span><span class="chip" style="background:#6B7A99">4 audience context</span><span class="chip soft">click a gap → English, by Claude</span></div>
+  <div class="media win" style="left:410px;top:290px;width:1100px;height:731px"><div class="bar3"><i style="left:20px;background:#ff5f57"></i><i style="left:44px;background:#febc2e"></i><i style="left:68px;background:#28c840"></i></div><img src="lm/mirror.jpg"><video src="lm/clips/mirror.mp4" poster="lm/mirror.jpg" autoplay muted loop playsinline></video></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">Over time</div>
+  <h2 style="font-size:64px;max-width:700px">Ukrainian follows Russian.</h2>
+  <p class="mute" style="position:absolute;left:120px;top:330px;width:700px;font-size:26px;margin:0">Share of paragraphs that have a match in the Russian article. The Ukrainian article appeared in 2016.</p>
+  <svg width="700" height="400" style="position:absolute;left:150px;top:470px;overflow:visible" font-family="Inter Tight"><line x1="30" x2="560" y1="330" y2="330" stroke="#E3EAF8" stroke-width="2"/><text x="16" y="338" text-anchor="end" font-size="22" fill="#6B7A99">0</text><line x1="30" x2="560" y1="180" y2="180" stroke="#E3EAF8" stroke-width="2"/><text x="16" y="188" text-anchor="end" font-size="22" fill="#6B7A99">50</text><line x1="30" x2="560" y1="30" y2="30" stroke="#E3EAF8" stroke-width="2"/><text x="16" y="38" text-anchor="end" font-size="22" fill="#6B7A99">100</text><text x="50" y="375" text-anchor="middle" font-size="22" fill="#6B7A99">2008</text><text x="150" y="375" text-anchor="middle" font-size="22" fill="#6B7A99">2012</text><text x="250" y="375" text-anchor="middle" font-size="22" fill="#6B7A99">2016</text><text x="350" y="375" text-anchor="middle" font-size="22" fill="#6B7A99">2020</text><text x="450" y="375" text-anchor="middle" font-size="22" fill="#6B7A99">2024</text><text x="550" y="375" text-anchor="middle" font-size="22" fill="#6B7A99">now</text>
+<path d="M50,321 L150,219 L250,213 L350,237 L450,237 L550,228" fill="none" stroke="#A9C1F8" stroke-width="5" stroke-linejoin="round"/><path d="M250,36 L350,30 L450,30 L550,42" fill="none" stroke="#2F63E6" stroke-width="6" stroke-linejoin="round"/><circle cx="250" cy="36" r="7" fill="#2F63E6"/><circle cx="350" cy="30" r="7" fill="#2F63E6"/><circle cx="450" cy="30" r="7" fill="#2F63E6"/><circle cx="550" cy="42" r="7" fill="#2F63E6"/><circle cx="50" cy="321" r="7" fill="#A9C1F8"/><circle cx="150" cy="219" r="7" fill="#A9C1F8"/><circle cx="250" cy="213" r="7" fill="#A9C1F8"/><circle cx="350" cy="237" r="7" fill="#A9C1F8"/><circle cx="450" cy="237" r="7" fill="#A9C1F8"/><circle cx="550" cy="228" r="7" fill="#A9C1F8"/>
+<text x="250" y="8" text-anchor="middle" font-size="24" font-weight="600" fill="#2F63E6">Ukrainian</text><text x="250" y="193" text-anchor="middle" font-size="24" fill="#6B7A99">Finnish</text></svg>
+  <p class="mute" style="position:absolute;left:120px;top:910px;width:700px;font-size:24px">Each point is one <code>FOR SYSTEM_TIME AS OF</code> query.</p>
+  <div class="media win" style="right:80px;top:200px;width:980px;height:656px"><div class="bar3"><i style="left:20px;background:#ff5f57"></i><i style="left:44px;background:#febc2e"></i><i style="left:68px;background:#28c840"></i></div><img src="lm/resemble.jpg"><video src="lm/clips/resemble.mp4" poster="lm/resemble.jpg" autoplay muted loop playsinline></video></div>
+  <div class="foot"><span></span><span>7</span></div>
+</section>
+
+<section class="slide">
+  <div style="display:flex;align-items:center;justify-content:space-between"><div class="kicker" style="margin:0">Built on MariaDB</div><img src="lm/mariadb.png" style="height:70px"></div><div style="height:26px"></div>
+  <h2>One system-versioned table with a vector index does the work.</h2>
+  <div style="margin:10px 0 34px"><span class="chip">VECTOR(1024) · bge-m3</span><span class="chip">VECTOR INDEX · cosine</span><span class="chip">WITH SYSTEM VERSIONING</span><span class="chip">real Wikipedia edit times</span></div>
+  <div class="card" style="padding:40px 46px;font-size:30px;line-height:1.6;white-space:pre;font-family:'JetBrains Mono',ui-monospace,monospace;color:var(--ink2)">SELECT a.chars,
+  1 - (SELECT MIN(<b class="blue">VEC_DISTANCE_COSINE</b>(a.emb, b.emb))
+       FROM lens_chunk <b class="blue">FOR SYSTEM_TIME AS OF</b> '2016-01-01' AS b
+       WHERE b.topic = a.topic AND b.lang = 'ru') AS sim
+FROM lens_chunk <b class="blue">FOR SYSTEM_TIME AS OF</b> '2016-01-01' AS a
+WHERE a.topic = 'Suomen sisällissota' AND a.lang = 'fi'</div>
+  <p class="lede" style="margin-top:34px;font-size:30px">The same statement powers the scores, the mirror, the timeline and the 'who resembles whom' grid. 13,024 paragraph versions in the table.</p>
+  <div class="foot"><span>app/kielipeili.py · SCORE_SQL, MATCH_SQL</span><span>8</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">Any article</div>
+  <h2 style="font-size:64px">Paste a link.<br>Two minutes later: scored.</h2>
+  <div style="position:absolute;left:112px;top:420px;width:620px;line-height:0"><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:var(--blue);box-shadow:0 6px 14px -4px rgba(47,99,230,.7)"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:var(--blue);box-shadow:0 6px 14px -4px rgba(47,99,230,.7)"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:var(--blue);box-shadow:0 6px 14px -4px rgba(47,99,230,.7)"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:var(--blue);box-shadow:0 6px 14px -4px rgba(47,99,230,.7)"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:var(--blue);box-shadow:0 6px 14px -4px rgba(47,99,230,.7)"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:var(--blue);box-shadow:0 6px 14px -4px rgba(47,99,230,.7)"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:var(--blue);box-shadow:0 6px 14px -4px rgba(47,99,230,.7)"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:var(--blue);box-shadow:0 6px 14px -4px rgba(47,99,230,.7)"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:var(--blue);box-shadow:0 6px 14px -4px rgba(47,99,230,.7)"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span><span style="display:inline-block;width:30px;height:30px;border-radius:50%;margin:7px;background:#D7E0F4;"></span></div>
+  <div style="position:absolute;left:120px;top:770px"><div class="big blue">9 <span class="mute" style="font-size:56px">of 68 editions</span></div><div class="mute" style="font-size:26px;margin-top:12px">Stepan Bandera: the longest editions, incl. <img class="flag" src="lm/flags/pl.svg">Polish</div></div>
+  <div class="media win" style="right:80px;top:200px;width:980px;height:656px"><div class="bar3"><i style="left:20px;background:#ff5f57"></i><i style="left:44px;background:#febc2e"></i><i style="left:68px;background:#28c840"></i></div><img src="lm/load.jpg"><video src="lm/clips/load.mp4" poster="lm/load.jpg" autoplay muted loop playsinline></video></div>
+  <div class="foot"><span></span><span>9</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">What the MariaDB host asked for</div>
+  <h2 style="font-size:64px">All six, built.</h2>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:36px;margin-top:20px"><div class="tile"><div class="ic"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2F63E6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div><div class="t">A score per language</div><div class="s">and how it is calculated</div></div><div class="tile"><div class="ic"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2F63E6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12l4 4v12H4z"/><path d="M8 12h8M8 16h5"/></svg></div><div class="t">Sources as ground truth</div><div class="s">not one language</div></div><div class="tile"><div class="ic"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2F63E6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 8l-3 6h6zM19 8l-3 6h6zM5 8h14"/></svg></div><div class="t">Fair vs unfair differences</div><div class="s">context, framing, errors</div></div><div class="tile"><div class="ic"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2F63E6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/></svg></div><div class="t">Any article</div><div class="s">the longest editions, found live</div></div><div class="tile"><div class="ic"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2F63E6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div><div class="t">His test cases</div><div class="s">Bandera with Polish, Nugiseks with Estonian</div></div><div class="tile"><div class="ic"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2F63E6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div class="t">Change over time</div><div class="s">FOR SYSTEM_TIME AS OF</div></div></div>
+  <div class="foot"><span>From two conversations with the host · context/wikipediathroughtime/</span><span>10</span></div>
+</section>
+
+<section class="slide">
+  <div class="band" style="top:120px"><img src="lm/hero-globe-poster.jpg"><video autoplay muted loop playsinline poster="lm/hero-globe-poster.jpg"><source src="lm/hero-globe-1980.av1.mp4" type="video/mp4; codecs=av01.0.08M.08"><source src="lm/hero-globe-1320.h264.mp4" type="video/mp4"></video></div>
+  <div style="position:absolute;left:120px;top:330px">
+    <h1 style="font-size:120px">Language Mirror</h1>
+    <p class="lede" style="margin-top:24px;font-size:42px">One story, every Wikipedia.</p>
+    <p class="blue" style="margin-top:34px;font-size:36px;font-family:'JetBrains Mono',ui-monospace,monospace">languagemirror.bobs.build</p>
+  </div>
+  <div style="position:absolute;left:120px;right:120px;bottom:100px;display:flex;gap:60px;align-items:center"><img src="lm/mariadb.png" style="height:56px"><img src="lm/claude.png" style="height:56px"><img src="lm/contextdev.png" style="height:56px"><img src="lm/wikidata.png" style="height:56px"><span class="mute" style="margin-left:auto;font-size:26px">Junction 2026</span></div>
+</section>
+<script>for (const v of document.querySelectorAll('video[src$="load.mp4"]')) v.playbackRate = 1.6;</script>
+</body>
+</html>

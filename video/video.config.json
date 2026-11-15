@@ -1,0 +1,26 @@
+{
+  "title": "Language Mirror",
+  "url": "languagemirror.bobs.build",
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "voAt": 9,
+  "tail": 24,
+  "wordsPerMinute": 150,
+  "voice": {
+    "provider": "elevenlabs",
+    "voiceId": "Hm0mJlZY3Pws7nTKAftG",
+    "model": "eleven_v4"
+  },
+  "music": {
+    "prompt": "Calm minimal warm electronic bed, soft pulses, light and hopeful, no vocals",
+    "volume": 0.12
+  },
+  "sfx": {
+    "sceneStart": "whoosh",
+    "sceneStartVolume": 0.22,
+    "volume": 0.3,
+    "typing": "type",
+    "typingVolume": 0.18
+  }
+}

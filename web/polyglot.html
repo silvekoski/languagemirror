@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="demo-title" content="Three Wikipedias">
+<meta name="demo-desc" content="Finnish, Swedish and English Wikipedia telling the same history: who covers what, and where MariaDB's vector distance shows the languages tell different stories.">
+<meta name="demo-tags" content="vectors,languages,coverage">
+<meta name="demo-order" content="6">
+<title>Three Wikipedias — Wikipedia Through Time</title>
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="polyglot.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="home" href="/">Wikipedia Through Time</a>
+  <span class="crumb">/</span><span class="crumb now">Three Wikipedias</span>
+  <span class="grow"></span>
+  <div class="findwrap"><input type="search" id="find" placeholder="Find a topic in any language…" autocomplete="off">
+    <div id="findRes" class="findres panel"></div></div>
+  <span class="legend-langs"><i class="lg fi">fi</i> Finnish <i class="lg sv">sv</i> Swedish <i class="lg en">en</i> English</span>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <h1>Three Wikipedias, one history</h1>
+      <p class="lede" id="lede">Loading…</p>
+    </div>
+    <div class="kpis" id="kpis"></div>
+  </section>
+
+  <section class="grid">
+    <!-- coverage -->
+    <div class="panel col cov">
+      <div class="ph"><h2>Who tells it</h2><span class="mute small" id="covNote"></span></div>
+      <svg id="upset" role="img" aria-label="Topic coverage by language combination"></svg>
+      <div class="ph sub">
+        <h3>Coverage by</h3>
+        <div class="seg" id="covBy">
+          <button data-v="theme" class="on">theme</button><button data-v="activity">Finnish edits</button><button data-v="years">first written</button>
+        </div>
+      </div>
+      <div id="covInsight" class="insight"></div>
+      <div class="covhead mono"><span></span><span class="r"><i class="lg sv">sv</i> <i class="lg en">en</i> share of Finnish topics</span></div>
+      <div id="covList" class="covlist"></div>
+    </div>
+
+    <!-- scatter -->
+    <div class="panel col plotcol">
+      <div class="ph">
+        <h2 id="plotTitle">Same topic, different story?</h2>
+        <div class="seg" id="pairSeg">
+          <button data-v="fi_en" class="on"><i class="lg fi">fi</i>↔<i class="lg en">en</i></button>
+          <button data-v="fi_sv"><i class="lg fi">fi</i>↔<i class="lg sv">sv</i></button>
+          <button data-v="sv_en"><i class="lg sv">sv</i>↔<i class="lg en">en</i></button>
+        </div>
+      </div>
+      <div class="controls">
+        <label>x <select id="xSel">
+          <option value="len">length ratio</option><option value="edits">Finnish edits</option>
+          <option value="year">first written</option><option value="rank">search rank</option>
+        </select></label>
+        <label>y <select id="ySel">
+          <option value="d">semantic distance</option><option value="r">beyond length gap</option>
+        </select></label>
+        <label>colour <select id="cSel">
+          <option value="theme">theme</option><option value="third">third language</option>
+          <option value="rank">search rank</option><option value="edits">Finnish edits</option>
+        </select></label>
+        <label class="chk" title="Hide topics where either article is shorter than 500 characters"><input type="checkbox" id="stubs" checked> hide stubs</label>
+      </div>
+      <div class="legend" id="legend"></div>
+      <div class="plot" id="plot">
+        <canvas id="cv"></canvas>
+        <svg id="ov"></svg>
+      </div>
+      <details class="sql"><summary>The SQL — distances computed inside MariaDB</summary>
+        <pre id="pairsSql"></pre></details>
+    </div>
+
+    <!-- lists -->
+    <div class="panel col lists">
+      <div class="ph"><h2>Extremes</h2>
+        <div class="seg small" id="scopeSeg"><button data-v="all" class="on">all</button><button data-v="theme" id="scopeTheme">theme</button></div>
+      </div>
+      <h3 class="lh warm">Tell different stories</h3>
+      <ol id="divList" class="tl"></ol>
+      <h3 class="lh cool">Tell the same story</h3>
+      <ol id="aliList" class="tl"></ol>
+    </div>
+  </section>
+
+  <section class="panel compare" id="compare">
+    <div class="cmphead" id="cmpHead"></div>
+    <div class="cmpgrid">
+      <div class="tri"><svg id="tri" viewBox="0 0 260 230"></svg><div id="triNote" class="mute small"></div></div>
+      <div class="cards" id="cards"></div>
+    </div>
+    <details class="sql"><summary>The SQL — this topic, live</summary><pre id="topicSql"></pre></details>
+  </section>
+  <footer class="mute small foot">Data: MariaDB Foundation's Finnish Wikipedia datasets (current text Aug 2025, bge-m3 vectors) ·
+    distances by <span class="mono">VEC_DISTANCE_COSINE</span> in MariaDB 12.3 · themes are the top-level categories under
+    <i>Luokka:Suomen historia</i> (English glosses).</footer>
+</main>
+<div class="tip" id="tip" hidden></div>
+<script type="module" src="polyglot.js"></script>
+</body>
+</html>

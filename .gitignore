@@ -1,0 +1,12 @@
+ref/
+data/
+.venv/
+__pycache__/
+*.pyc
+.env
+node_modules/
+dist/
+web/data/
+build/
+.venv-gpu/
+.venv-embed/

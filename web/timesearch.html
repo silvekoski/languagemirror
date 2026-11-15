@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="demo-title" content="Time Machine Search">
+<meta name="demo-desc" content="Ask Wikipedia as it stood in any year and get a source-cited answer, plus what changed since. Retrieval is FOR SYSTEM_TIME AS OF + vector search; every claim links to the exact historical version.">
+<meta name="demo-tags" content="RAG,vectors,system-versioning,both tracks">
+<meta name="demo-order" content="0">
+<title>Time Machine Search — Wikipedia Through Time</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+  body { min-height: 100vh; background: radial-gradient(900px 500px at 15% -10%, rgba(255,180,107,.08), transparent 60%),
+    radial-gradient(900px 500px at 90% 0%, rgba(138,180,255,.08), transparent 60%), var(--bg); }
+  main { max-width: 1240px; margin: 0 auto; padding: 34px 20px 80px; }
+  .lede { color: var(--ink-2); max-width: 760px; margin: 10px 0 26px; font-size: 16px; }
+  .ask { display: flex; gap: 10px; }
+  #q { flex: 1; font: 400 22px/1.2 var(--serif); padding: 14px 18px; border-radius: 12px; }
+  #go { font: 500 15px var(--sans); padding: 0 22px; border-radius: 12px; border: 1px solid rgba(138,180,255,.45);
+    background: rgba(138,180,255,.16); color: var(--ink); cursor: pointer; }
+  .examples { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0 0; }
+  .when { display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: center; margin: 26px 0 8px; }
+  #year { font: 300 64px/0.9 var(--serif); letter-spacing: -.03em; font-variant-numeric: tabular-nums; min-width: 160px; }
+  #yearSub { color: var(--mute); font-size: 13px; }
+  #slider { width: 100%; accent-color: var(--warm); }
+  .ticks { display: flex; justify-content: space-between; color: var(--faint); font: 11px var(--mono); margin-top: 2px; }
+  .cols { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 22px; margin-top: 18px; }
+  @media (max-width: 900px) { .cols { grid-template-columns: 1fr; } #year { font-size: 48px; } }
+  .res { padding: 16px 18px; border-bottom: 1px solid var(--line); }
+  .res:last-child { border-bottom: 0; }
+  .res .top { display: flex; gap: 10px; align-items: baseline; }
+  .rank { font: 300 26px/1 var(--serif); color: var(--faint); width: 26px; flex: none; }
+  .res h3 { margin: 0; font: 500 19px/1.2 var(--serif); }
+  .res .meta { margin-left: auto; font: 11px var(--mono); color: var(--faint); white-space: nowrap; }
+  .res p { margin: 8px 0 6px 36px; color: var(--ink-2); font-size: 14px; }
+  .res .links { margin-left: 36px; font-size: 12.5px; color: var(--mute); display: flex; gap: 14px; flex-wrap: wrap; }
+  .badge { font: 10.5px var(--mono); padding: 1px 6px; border-radius: 4px; border: 1px solid; }
+  .badge.gone { color: var(--warm); border-color: rgba(255,180,107,.4); }
+  .badge.kept { color: var(--bot); border-color: rgba(95,212,176,.35); }
+  .box { padding: 18px; }
+  .box h2 { font-size: 21px; margin-bottom: 4px; }
+  .box .sub { color: var(--mute); font-size: 13px; margin-bottom: 10px; }
+  #bump { width: 100%; height: 470px; display: block; }
+  details summary { cursor: pointer; color: var(--mute); font-size: 13px; margin-top: 14px; }
+  pre.sql { font: 12px/1.55 var(--mono); color: #a9bbdc; background: rgba(0,0,0,.35); padding: 12px; border-radius: 9px;
+    white-space: pre-wrap; margin: 8px 0 0; }
+  .status { font-size: 13px; color: var(--mute); margin-top: 8px; min-height: 18px; }
+  .warn { color: var(--warm); }
+  .answer { padding: 18px 20px; margin-top: 18px; }
+  .ahead { display: flex; gap: 14px; align-items: baseline; justify-content: space-between; flex-wrap: wrap; }
+  .ahead h2 { font-size: 21px; }
+  .abtns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .asub { color: var(--mute); font-size: 13px; margin: 4px 0 12px; max-width: 760px; }
+  .atext { font: 17px/1.65 var(--serif); color: var(--ink); max-width: 860px; white-space: pre-wrap; min-height: 28px; }
+  .atext .cited { background: rgba(138,180,255,.08); border-radius: 3px; }
+  .atext sup a { font: 600 11.5px var(--sans); color: var(--accent); padding: 0 2px; text-decoration: none; }
+  .atext .caret { display: inline-block; width: 8px; height: 17px; background: var(--warm); vertical-align: -2px; animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .asources { margin: 14px 0 0; padding-left: 22px; color: var(--ink-2); font-size: 13.5px; columns: 2 320px; }
+  .asources li { margin: 0 0 8px; break-inside: avoid; line-height: 1.35; }
+  .asources .when { display: block; font: 12px var(--mono); color: var(--mute); }
+  .asources .now { color: var(--bot); }
+</style>
+</head>
+<body>
+<div class="topbar"><a class="home" href="/">Wikipedia Through Time</a><span class="mute">/ Time Machine Search</span></div>
+<main>
+  <h1>Ask Wikipedia — in any year</h1>
+  <p class="lede">Every article's meaning was captured once a year from 2004 to today (170,300 bge-m3 vectors), stored in a
+    MariaDB <b>system-versioned</b> table with Wikipedia's real edit times. One SQL statement travels back in time
+    <em>and</em> runs the vector search, so you see what the encyclopedia could have told you then, linked to the exact version.</p>
+  <form class="ask" id="form"><input id="q" type="text" placeholder="Ask in Finnish, Swedish or English…" autocomplete="off"><button id="go">Search</button></form>
+  <div class="examples" id="examples"></div>
+  <div class="status" id="status"></div>
+  <div class="when panel" style="padding:16px 20px">
+    <div><div id="year">2026</div><div id="yearSub">as of 1 Oct 2026</div></div>
+    <div><input id="slider" type="range" min="2004" max="2027" step="1" value="2027">
+      <div class="ticks"><span>2004</span><span>2008</span><span>2012</span><span>2016</span><span>2020</span><span>2024</span><span>now</span></div></div>
+  </div>
+  <section class="panel answer" id="answerBox">
+    <div class="ahead">
+      <h2>Answer from Wikipedia as it stood then</h2>
+      <div class="abtns">
+        <button class="chip on" type="button" id="askThen">Answer as of <span class="yl">now</span></button>
+        <button class="chip" type="button" id="askCmp">…and what changed since</button>
+      </div>
+    </div>
+    <div class="asub">Claude Opus 5.5 writes the answer only from the article texts <em>as they read on that date</em>
+      (read from the system-versioned table), and cites every claim to the exact Wikipedia version.</div>
+    <div id="answer" class="atext mute">Ask a question above, then press a button.</div>
+    <ol id="asources" class="asources"></ol>
+  </section>
+  <div class="cols">
+    <section class="panel" id="results"><div class="res mute">Ask something, then drag through the years.</div></section>
+    <section class="panel box">
+      <h2>How the answer drifted</h2>
+      <div class="sub" id="bumpSub">Rank of each article for this question, every 1 January 2004 → today.</div>
+      <svg id="bump"></svg>
+      <details><summary>The SQL</summary><pre class="sql" id="sql"></pre></details>
+    </section>
+  </div>
+</main>
+<div class="tip" id="tip" style="display:none"></div>
+<script type="module">
+import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm";
+
+const EX = ["Kuka oli Suomen presidentti?", "Suomen NATO-jäsenyys", "Why did the Finnish Civil War happen?",
+            "koronarokotukset Suomessa", "Vem var Mannerheim?", "kansalaissota vai vapaussota"];
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+$("examples").innerHTML = EX.map(e => `<button class="chip" type="button">${esc(e)}</button>`).join("");
+$("examples").querySelectorAll("button").forEach(b => b.onclick = () => { $("q").value = b.textContent; run(); });
+
+let current = "", year = 2027, drift = null;
+const tLabel = y => y >= 2027 ? "now" : String(y);
+const moment = y => y >= 2027 ? "2026-10-01" : `${y}-01-01`;
+
+fetch("/api/timesearch/status").then(r => r.json()).then(s => {
+  if (!s.embedder) $("status").innerHTML = `<span class="warn">Question embedder offline</span> — free-text questions need scripts/embed_server.py. ` +
+    `Type <code>like:1256</code> (an article id) to search with an article's own meaning.`;
+});
+
+$("form").onsubmit = e => { e.preventDefault(); run(); };
+$("slider").oninput = () => { year = +$("slider").value; showYear(); searchAt(); highlightYear(); };
+
+// ---------- grounded answer (RAG over the system-versioned history) ----------
+let askSeq = 0;
+$("askThen").onclick = () => ask(false);
+$("askCmp").onclick = () => ask(true);
+async function ask(compare) {
+  if (!current) { current = $("q").value.trim(); if (!current) return; }
+  const my = ++askSeq, box = $("answer"), src = $("asources");
+  $("askThen").classList.toggle("on", !compare); $("askCmp").classList.toggle("on", compare);
+  box.classList.remove("mute"); box.innerHTML = `<span class="mute">Finding what Wikipedia said…</span>`; src.innerHTML = "";
+  const blocks = [], cites = [];
+  let sources = [], done = null;
+  const render = () => {
+    box.innerHTML = blocks.map((t, i) => {
+      const cs = [...new Set((cites[i] || []).map(c => c.doc))];
+      const marks = cs.map(d => {
+        const s = sources[d] || {}, q = (cites[i] || []).find(c => c.doc === d)?.cited_text || "";
+        return `<sup><a href="https://fi.wikipedia.org/?oldid=${s.rev_id}" target="_blank" rel="noopener" title="${esc(s.title)} (${String(s.version).slice(0, 10)}): “${esc(q.trim().slice(0, 240))}”">${d + 1}</a></sup>`;
+      }).join("");
+      return cs.length ? `<span class="cited">${esc(t)}</span>${marks}` : esc(t);
+    }).join("") + (done ? "" : `<span class="caret"></span>`);
+  };
+  const r = await fetch(`/api/ask/stream?q=${encodeURIComponent(current)}&t=${moment(year)}${compare ? "&compare=1" : ""}`);
+  const reader = r.body.getReader(), dec = new TextDecoder();
+  let buf = "";
+  while (true) {
+    const { value, done: end } = await reader.read();
+    if (end || my !== askSeq) break;
+    buf += dec.decode(value, { stream: true });
+    let i;
+    while ((i = buf.indexOf("\n\n")) >= 0) {
+      const line = buf.slice(0, i); buf = buf.slice(i + 2);
+      if (!line.startsWith("data: ")) continue;
+      const e = JSON.parse(line.slice(6));
+      if (e.type === "sources") {
+        sources = e.sources;
+        src.innerHTML = sources.map(s => `<li><a href="https://fi.wikipedia.org/?oldid=${s.rev_id}" target="_blank" rel="noopener">${esc(s.title)}</a>
+          <span class="when ${s.as_of.startsWith("2026-10") ? "now" : ""}">version of ${String(s.version).slice(0, 10)}${s.as_of.startsWith("2026-10") ? " · today" : ""}</span></li>`).join("");
+        box.innerHTML = `<span class="mute">Read ${sources.length} article versions in ${e.retrieval_ms} ms. Writing…</span>`;
+      } else if (e.type === "text") { blocks[e.block] = (blocks[e.block] || "") + e.text; render(); }
+      else if (e.type === "cite") { (cites[e.block] = cites[e.block] || []).push(e.citation); render(); }
+      else if (e.type === "done") { done = e; render(); $("status").textContent = `Answer: ${e.model}, ${(e.ms / 1000).toFixed(1)} s total`; }
+      else if (e.type === "error") { done = e; box.innerHTML = `<span class="warn">${esc(e.error)}</span>`; }
+    }
+  }
+}
+
+function showYear() {
+  $("year").textContent = tLabel(year);
+  document.querySelectorAll(".yl").forEach(el => el.textContent = year >= 2027 ? "now" : `1 Jan ${year}`);
+  $("yearSub").textContent = year >= 2027 ? "as of 1 Oct 2026" : `as of 1 January ${year}`;
+}
+
+async function run() {
+  current = $("q").value.trim();
+  if (!current) return;
+  const u = new URL(location); u.searchParams.set("q", current); u.searchParams.set("y", tLabel(year)); history.replaceState(null, "", u);
+  searchAt(); loadDrift();
+}
+
+let seq = 0;
+async function searchAt() {
+  if (!current) return;
+  const my = ++seq;
+  $("status").textContent = "Searching…";
+  const r = await fetch(`/api/timesearch/search?q=${encodeURIComponent(current)}&t=${moment(year)}&k=8`);
+  const d = await r.json();
+  if (my !== seq) return;
+  if (!r.ok) { $("status").innerHTML = `<span class="warn">${esc(d.error)}</span> ${esc(d.hint || "")}`; return; }
+  $("status").textContent = `${d.label ? d.label + " · " : ""}${d.results.length} articles as of ${d.moment.slice(0, 10)} · vector search ${d.ms} ms`;
+  $("sql").textContent = d.sql;
+  $("results").innerHTML = d.results.map((r, i) => `<div class="res">
+    <div class="top"><span class="rank">${i + 1}</span><h3>${esc(r.title)}</h3>
+      <span class="meta">${(1 - r.distance).toFixed(3)} sim</span></div>
+    <p>${r.snippet ? esc(r.snippet) : `<span class="mute">Text of this version is not in the local database (history too large for the laptop); the vector is.</span>`}</p>
+    <div class="links"><a href="https://fi.wikipedia.org/?oldid=${r.rev_id}" target="_blank" rel="noopener">this version (${String(r.version_of).slice(0, 10)}) ↗</a>
+      <a href="https://fi.wikipedia.org/?curid=${r.page_id}" target="_blank" rel="noopener">today ↗</a>
+      ${year < 2027 ? (r.also_today ? `<span class="badge kept">still a top answer today</span>` : `<span class="badge gone">no longer in today's top 8</span>`) : ""}</div>
+  </div>`).join("") || `<div class="res mute">Nothing existed yet.</div>`;
+}
+
+async function loadDrift() {
+  const svg = d3.select("#bump"); svg.selectAll("*").remove();
+  $("bumpSub").textContent = "Computing 24 time-travel searches…";
+  const r = await fetch(`/api/timesearch/drift?q=${encodeURIComponent(current)}&k=8`);
+  drift = await r.json();
+  if (!r.ok) { $("bumpSub").textContent = drift.error; return; }
+  $("bumpSub").textContent = `Rank of each article for this question, every 1 January 2004 → today (median ${drift.ms_median} ms per search).`;
+  drawBump();
+}
+
+function drawBump() {
+  const svg = d3.select("#bump"), W = svg.node().clientWidth, H = svg.node().clientHeight;
+  svg.selectAll("*").remove();
+  const K = 8, years = drift.years, m = { l: 18, r: 150, t: 14, b: 26 };
+  const x = d3.scalePoint(years, [m.l, W - m.r]), y = d3.scaleLinear([1, K], [m.t + 8, H - m.b - 8]);
+  // most persistent articles get the strongest colours
+  const ser = drift.series.map(s => ({ ...s, n: Object.keys(s.ranks).length })).sort((a, b) => b.n - a.n);
+  const color = d3.scaleOrdinal(ser.map(s => s.page_id),
+    ["#8ab4ff", "#ffb46b", "#5fd4b0", "#ff7d8a", "#b48cff", "#ffd36e", "#7fd8ff", "#f49ac1", "#a6e36e", "#c7a77b"].concat(Array(60).fill("#5a6380")));
+  svg.append("g").selectAll("text").data(years.filter((_, i) => i % 2 === 0 || _ === "now")).join("text")
+    .attr("x", d => x(d)).attr("y", H - 6).attr("text-anchor", "middle").attr("fill", "#4a5168")
+    .style("font", "11px var(--mono)").text(d => d === "now" ? "now" : "'" + d.slice(2));
+  svg.append("rect").attr("id", "yearBand").attr("y", m.t).attr("height", H - m.t - m.b).attr("width", 16)
+    .attr("fill", "rgba(255,180,107,.10)").attr("rx", 4);
+  const line = d3.line().x(d => x(d[0])).y(d => y(d[1])).curve(d3.curveMonotoneX);
+  const segs = s => {   // break the line where the article fell out of the top K
+    const out = []; let cur = [];
+    for (const yr of years) { const r = s.ranks[yr]; if (r) cur.push([yr, r]); else if (cur.length) { out.push(cur); cur = []; } }
+    if (cur.length) out.push(cur); return out;
+  };
+  const g = svg.append("g").selectAll("g").data(ser).join("g").attr("class", "s");
+  g.each(function (s) {
+    const el = d3.select(this);
+    for (const seg of segs(s)) {
+      el.append("path").attr("d", line(seg)).attr("fill", "none").attr("stroke", color(s.page_id))
+        .attr("stroke-width", 2.4).attr("stroke-opacity", .85);
+      el.selectAll(null).data(seg).join("circle").attr("cx", d => x(d[0])).attr("cy", d => y(d[1])).attr("r", 3.2)
+        .attr("fill", color(s.page_id));
+    }
+    const last = years.filter(yr => s.ranks[yr]).at(-1);
+    if (last === "now") el.append("text").attr("x", x("now") + 9).attr("y", y(s.ranks.now) + 4)
+      .attr("fill", color(s.page_id)).style("font", "12.5px var(--sans)").text(s.title.length > 22 ? s.title.slice(0, 21) + "…" : s.title);
+  });
+  const tip = $("tip");
+  g.on("mouseenter", function (ev, s) {
+    g.style("opacity", o => o === s ? 1 : .15);
+    const firstYr = years.find(yr => s.ranks[yr]);
+    tip.style.display = "block";
+    tip.innerHTML = `<b>${esc(s.title)}</b><br><span class="mute">first in top 8: ${firstYr}; best rank ${Math.min(...Object.values(s.ranks))}${s.ranks.now ? `; today #${s.ranks.now}` : "; not in today's top 8"}</span>`;
+  }).on("mousemove", ev => { tip.style.left = ev.clientX + 14 + "px"; tip.style.top = ev.clientY + 12 + "px"; })
+    .on("mouseleave", () => { g.style("opacity", 1); tip.style.display = "none"; })
+    .on("click", (ev, s) => { $("q").value = "like:" + s.page_id; run(); });
+  highlightYear();
+}
+function highlightYear() {
+  if (!drift) return;
+  const W = d3.select("#bump").node().clientWidth;
+  const x = d3.scalePoint(drift.years, [18, W - 150]);
+  d3.select("#yearBand").attr("x", x(tLabel(year)) - 8);
+}
+addEventListener("resize", () => drift && drawBump());
+
+const p = new URLSearchParams(location.search);
+if (p.get("y")) { year = p.get("y") === "now" ? 2027 : +p.get("y"); $("slider").value = year; showYear(); }
+if (p.get("q")) { $("q").value = p.get("q"); run(); if (p.get("ask")) ask(p.get("ask") === "cmp"); }
+</script>
+</body>
+</html>

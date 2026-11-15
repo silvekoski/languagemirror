@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="demo-title" content="Biggest Stories">
+<meta name="demo-desc" content="A bar chart race 2003→2026: the largest and the most edited Finnish history articles, month by month, and how long each held the top spot.">
+<meta name="demo-tags" content="time,ranking,system-versioning">
+<meta name="demo-order" content="10">
+<title>Biggest Stories — Wikipedia Through Time</title>
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="race.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="home" href="/">Wikipedia Through Time</a>
+  <span class="crumb">/ Biggest Stories</span>
+  <span class="grow"></span>
+  <span class="mono mute hide-sm">source: <code>revision</code> · <code>article FOR SYSTEM_TIME AS OF</code></span>
+</header>
+
+<main class="wrap">
+  <section class="intro">
+    <div>
+      <h1>Biggest Stories</h1>
+      <p class="lede" id="lede">Which history article was Finnish Wikipedia's biggest story, month by month?
+        Every version since 2003 replayed as a race: where the encyclopedia put its words, and where its
+        editors put their attention.</p>
+    </div>
+    <div class="modes" role="tablist">
+      <button class="chip on" data-mode="bytes" role="tab">Largest articles <span class="mute">bytes</span></button>
+      <button class="chip" data-mode="edits" role="tab">Most edited <span class="mute">trailing 12 mo</span></button>
+    </div>
+  </section>
+
+  <section class="stage panel">
+    <div class="caption" id="caption">&nbsp;</div>
+    <div id="chartBox"><svg id="chart"></svg></div>
+    <div class="foot"><span id="unitNote" class="mute"></span><span id="busy" class="mute"></span></div>
+  </section>
+
+  <aside class="side panel" id="side"></aside>
+
+  <section class="timeline panel">
+    <button id="play" title="Play / pause (space)" aria-label="Play">▶</button>
+    <div class="ribbonWrap">
+      <div class="rlabel"><span>Who was #1, every month</span><span class="mute" id="rhint">drag to scrub · ← → step</span></div>
+      <svg id="ribbon"></svg>
+    </div>
+  </section>
+
+  <details class="sql panel" id="sqlBox">
+    <summary>The SQL</summary>
+    <pre id="sqlPre"></pre>
+  </details>
+</main>
+<div class="tip" id="tip" hidden></div>
+<script type="module" src="race.js"></script>
+</body>
+</html>

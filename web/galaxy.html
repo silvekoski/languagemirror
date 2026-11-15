@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="demo-title" content="Knowledge Galaxy">
+<meta name="demo-desc" content="29,460 articles in 3D, placed by meaning (bge-m3 vectors in MariaDB). Replay 2003→2026: stars ignite when written and flare when edited.">
+<meta name="demo-tags" content="3D,vectors,time">
+<meta name="demo-order" content="1">
+<title>Knowledge Galaxy — Wikipedia Through Time</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #04050a; --ink: #e8ecf4; --mute: #8a93a8; --faint: #4a5168;
+    --glass: rgba(14, 17, 28, 0.72); --line: rgba(255, 255, 255, 0.08);
+    --accent: #8ab4ff; --fi: #7fb2ff; --sv: #ffd36e; --en: #ff7d8a; --rev: #ff5468;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink);
+    font: 14px/1.45 "Instrument Sans", system-ui, sans-serif; overflow: hidden; }
+  canvas { display: block; }
+  #labels { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+  .clabel { position: absolute; transform: translate(-50%, -50%); white-space: nowrap;
+    font-size: 11px; letter-spacing: .04em; color: rgba(232, 236, 244, .85);
+    text-shadow: 0 0 6px #000, 0 0 2px #000; pointer-events: auto; cursor: pointer;
+    transition: opacity .25s; }
+  .clabel:hover { color: #fff; }
+
+  .glass { background: var(--glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--line); border-radius: 14px; }
+
+  #head { position: fixed; top: 18px; left: 18px; width: min(380px, calc(100vw - 36px)); padding: 16px 18px; }
+  #head h1 { margin: 0 0 4px; font: 500 26px/1.1 Newsreader, Georgia, serif; letter-spacing: -.01em; }
+  #head p { margin: 0 0 12px; color: var(--mute); font-size: 14px; }
+  #search { width: 100%; padding: 9px 12px; border-radius: 9px; border: 1px solid var(--line);
+    background: rgba(255,255,255,.04); color: var(--ink); font: inherit; outline: none; }
+  #search:focus { border-color: rgba(138,180,255,.5); }
+  #results { margin-top: 6px; max-height: 240px; overflow: auto; }
+  #results div { padding: 5px 8px; border-radius: 6px; cursor: pointer; display: flex; gap: 8px; align-items: baseline; }
+  #results div:hover { background: rgba(255,255,255,.06); }
+  .lang { font: 11px "JetBrains Mono", monospace; text-transform: uppercase; padding: 1px 5px; border-radius: 4px;
+    border: 1px solid currentColor; opacity: .9; flex: none; }
+  .lang.f { color: var(--fi); } .lang.s { color: var(--sv); } .lang.e { color: var(--en); }
+  .modes { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+  .chip { font-size: 12px; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line);
+    background: transparent; color: var(--mute); cursor: pointer; font-family: inherit; }
+  .chip.on { color: var(--ink); background: rgba(138,180,255,.14); border-color: rgba(138,180,255,.4); }
+
+  #panel { position: fixed; top: 18px; right: 18px; width: min(380px, calc(100vw - 36px));
+    max-height: calc(100vh - 150px); overflow: auto; padding: 18px; display: none; }
+  #panel h2 { margin: 6px 0 2px; font: 500 24px/1.15 Newsreader, Georgia, serif; }
+  #panel .sub { color: var(--mute); font-size: 12px; }
+  #panel .intro { color: #c3c9d6; font-size: 14px; margin: 10px 0; }
+  #panel h3 { font-size: 13px; color: #c3c9d6;
+    margin: 18px 0 6px; font-weight: 600; }
+  #panel a { color: var(--accent); text-decoration: none; }
+  #panel .close { position: absolute; top: 10px; right: 12px; background: none; border: 0; color: var(--mute);
+    font-size: 20px; cursor: pointer; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0 4px; }
+  .stat b { display: block; font-size: 17px; font-weight: 600; }
+  .stat span { font-size: 12px; color: var(--mute); }
+  .nb { display: flex; gap: 8px; align-items: baseline; padding: 4px 6px; border-radius: 6px; cursor: pointer; }
+  .nb:hover { background: rgba(255,255,255,.06); }
+  .nb .d { margin-left: auto; font: 12px "JetBrains Mono", monospace; color: var(--mute); }
+  pre.sql { font: 12px/1.5 "JetBrains Mono", monospace; color: #9fb0d0; background: rgba(0,0,0,.35);
+    padding: 10px 12px; border-radius: 8px; white-space: pre-wrap; margin: 6px 0 0; }
+  details summary { cursor: pointer; color: var(--mute); font-size: 12px; margin-top: 10px; }
+  #spark { width: 100%; height: 66px; display: block; }
+
+  #time { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);
+    width: min(760px, calc(100vw - 36px)); padding: 12px 18px 14px; }
+  #time .row { display: flex; align-items: center; gap: 14px; }
+  #play { width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(138,180,255,.45);
+    background: rgba(138,180,255,.12); color: var(--ink); cursor: pointer; font-size: 14px; flex: none; }
+  #year { font: 300 34px/1 Newsreader, Georgia, serif; letter-spacing: -.02em; width: 82px; flex: none; font-variant-numeric: tabular-nums; }
+  #slider-wrap { flex: 1; position: relative; }
+  #births { width: 100%; height: 26px; display: block; }
+  #slider { width: 100%; margin: 2px 0 0; accent-color: var(--accent); }
+  #time .cap { font-size: 12px; color: var(--mute); margin-top: 4px; display: flex; justify-content: space-between; gap: 10px; }
+  #tip { position: fixed; pointer-events: none; padding: 7px 10px; font-size: 13px; border-radius: 8px;
+    display: none; max-width: 320px; z-index: 5; }
+  #loading { position: fixed; inset: 0; display: grid; place-items: center; color: var(--mute); font-size: 14px; }
+  @media (max-width: 760px) { #head p, .modes { display: none; } #panel { top: auto; bottom: 150px; max-height: 45vh; } }
+</style>
+</head>
+<body>
+<div id="loading">Loading 29,460 stars…</div>
+<div id="labels"></div>
+
+<div id="head" class="glass">
+  <h1>Knowledge Galaxy</h1>
+  <p>29,460 Wikipedia articles on the history of Finland, in Finnish, Swedish and English, placed by
+    meaning: bge-m3 vectors stored in MariaDB, projected to 3D. Press play to watch the encyclopedia
+    being written, 2003 → 2026.</p>
+  <input id="search" placeholder="Find an article… (Talvisota, Kekkonen, Sauna)" autocomplete="off">
+  <div id="results"></div>
+  <div class="modes" id="colorModes">
+    <button class="chip on" data-mode="0">Topic</button>
+    <button class="chip" data-mode="1">Language</button>
+    <button class="chip" data-mode="2">Age</button>
+    <button class="chip" id="bridges">Language bridges</button>
+    <button class="chip on" id="labelsBtn">Labels</button>
+  </div>
+</div>
+
+<div id="panel" class="glass"></div>
+<div id="tip" class="glass"></div>
+
+<div id="time" class="glass">
+  <div class="row">
+    <button id="play" title="Play history (space)">▶</button>
+    <div id="year">2026</div>
+    <div id="slider-wrap">
+      <canvas id="births"></canvas>
+      <input id="slider" type="range" min="2003" max="2026.75" step="0.01" value="2026.75">
+    </div>
+  </div>
+  <div class="cap"><span id="capL">All articles as of today. Stars flare when their article is edited heavily.</span><span id="capR"></span></div>
+</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+const D = await (await fetch("data/galaxy.json")).json();
+document.getElementById("loading").remove();
+const N = D.n, [Y0, Y1] = D.years, NY = Y1 - Y0 + 1, SCALE = 22;
+const LANGS = { f: "fi", s: "sv", e: "en" };
+
+// ---------- scene ----------
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+document.body.prepend(renderer.domElement);
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x04050a, 0.006);
+const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 2000);
+camera.position.set(0, 18, 95);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; controls.dampingFactor = 0.06;
+controls.autoRotate = true; controls.autoRotateSpeed = 0.25;
+controls.minDistance = 3; controls.maxDistance = 300;
+
+// faint background dust for depth
+{
+  const g = new THREE.BufferGeometry(), p = new Float32Array(3000 * 3);
+  for (let i = 0; i < p.length; i++) p[i] = (Math.random() - .5) * 900;
+  g.setAttribute("position", new THREE.BufferAttribute(p, 3));
+  scene.add(new THREE.Points(g, new THREE.PointsMaterial({ color: 0x3a4466, size: 0.9, sizeAttenuation: false, transparent: true, opacity: .5 })));
+}
+
+// ---------- colours ----------
+const NC = D.clusters.length;
+const clusterIdx = new Map(D.clusters.map((c, i) => [c.id, i]));
+function clusterColor(c) {        // golden-angle hues, gentle saturation: a nebula, not a rainbow
+  const i = clusterIdx.get(c) ?? 0;
+  return new THREE.Color().setHSL(((i * 0.61803398875) % 1), 0.62, 0.62);
+}
+const LANG_COL = { f: new THREE.Color("#7fb2ff"), s: new THREE.Color("#ffd36e"), e: new THREE.Color("#ff7d8a") };
+const OLD = new THREE.Color("#ffb46b"), NEW = new THREE.Color("#7fd8ff"), UNKNOWN = new THREE.Color("#55607a");
+
+// ---------- stars ----------
+const pos = new Float32Array(N * 3), colT = new Float32Array(N * 3), colL = new Float32Array(N * 3), colA = new Float32Array(N * 3);
+const birth = new Float32Array(N), size = new Float32Array(N), index = new Float32Array(N);
+for (let i = 0; i < N; i++) {
+  pos[i * 3] = D.xyz[i * 3] * SCALE; pos[i * 3 + 1] = D.xyz[i * 3 + 1] * SCALE; pos[i * 3 + 2] = D.xyz[i * 3 + 2] * SCALE;
+  clusterColor(D.cluster[i]).toArray(colT, i * 3);
+  LANG_COL[D.lang[i]].toArray(colL, i * 3);
+  const b = D.birth[i];
+  (b == null ? UNKNOWN : OLD.clone().lerp(NEW, (b - Y0) / (Y1 - Y0))).toArray(colA, i * 3);
+  birth[i] = b == null ? -1 : b;
+  size[i] = 1.0 + Math.log10(1 + D.versions[i]) * 0.9;
+  index[i] = i;
+}
+// yearly edit activity (log-scaled bytes) as a texture the vertex shader samples by year
+const actBytes = Uint8Array.from(atob(D.activity), c => c.charCodeAt(0));
+const TW = 2048, TH = Math.ceil(N * NY / TW);
+const actData = new Uint8Array(TW * TH); actData.set(actBytes);
+const actTex = new THREE.DataTexture(actData, TW, TH, THREE.RedFormat, THREE.UnsignedByteType);
+actTex.needsUpdate = true;
+
+const geo = new THREE.BufferGeometry();
+geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+geo.setAttribute("colT", new THREE.BufferAttribute(colT, 3));
+geo.setAttribute("colL", new THREE.BufferAttribute(colL, 3));
+geo.setAttribute("colA", new THREE.BufferAttribute(colA, 3));
+geo.setAttribute("birth", new THREE.BufferAttribute(birth, 1));
+geo.setAttribute("psize", new THREE.BufferAttribute(size, 1));
+geo.setAttribute("idx", new THREE.BufferAttribute(index, 1));
+
+const uniforms = {
+  uYear: { value: Y1 + 0.75 }, uTimeOn: { value: 0 }, uMode: { value: 0 },
+  uAct: { value: actTex }, uPR: { value: renderer.getPixelRatio() }, uSel: { value: -1 },
+  uFocus: { value: -1 }, uDim: { value: 0 }, uClock: { value: 0 },
+};
+const mat = new THREE.ShaderMaterial({
+  uniforms, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  vertexShader: /* glsl */`
+    attribute vec3 colT; attribute vec3 colL; attribute vec3 colA;
+    attribute float birth; attribute float psize; attribute float idx;
+    uniform float uYear, uTimeOn, uMode, uPR, uSel, uFocus, uDim, uClock;
+    uniform sampler2D uAct;
+    varying vec3 vCol; varying float vA;
+    float act(int y) {
+      int i = int(idx) * ${NY} + clamp(y, 0, ${NY - 1});
+      return texelFetch(uAct, ivec2(i % ${TW}, i / ${TW}), 0).r;   // 0..1, log10(edits)*80/255
+    }
+    void main() {
+      vec4 mv = modelViewMatrix * vec4(position, 1.0);
+      gl_Position = projectionMatrix * mv;
+      vec3 c = uMode < 0.5 ? colT : (uMode < 1.5 ? colL : colA);
+      float born = 1.0, flash = 0.0, a = 0.0;
+      if (uTimeOn > 0.5) {
+        float y = uYear - ${Y0}.0;
+        a = mix(act(int(floor(y))), act(int(floor(y)) + 1), fract(y));
+        a = smoothstep(0.15, 0.85, a);                     // ~2 edits a year is quiet, 100+ is a blaze
+        if (birth >= 0.0) {
+          born = step(birth, uYear);
+          flash = born * exp(-(uYear - birth) * 5.0);      // a newborn article flares for a few months
+        } else {
+          born = 0.35;                                     // sv/en topics with no Finnish history: faint
+        }
+      }
+      float sel = abs(idx - uSel) < 0.5 ? 1.0 : 0.0;
+      float dim = uDim > 0.5 && sel < 0.5 ? 0.25 : 1.0;
+      float s = psize * (1.0 + 1.6 * a + 2.5 * flash + 2.5 * sel);
+      s *= 1.0 + 0.12 * sin(uClock * 2.0 + idx) * a;      // busy stars twinkle
+      gl_PointSize = born > 0.0 ? max(1.6 * uPR, s * uPR * 230.0 / -mv.z) : 0.0;
+      vCol = mix(c, vec3(1.0), clamp(0.6 * flash + 0.35 * a + 0.8 * sel, 0.0, 1.0));
+      vA = born * dim * (uTimeOn > 0.5 ? 0.30 + 0.7 * max(a, flash) : 0.62) + sel;
+    }`,
+  fragmentShader: /* glsl */`
+    varying vec3 vCol; varying float vA;
+    void main() {
+      vec2 p = gl_PointCoord - 0.5;
+      float d = length(p) * 2.0;
+      if (d > 1.0) discard;
+      float core = exp(-d * d * 9.0), halo = exp(-d * d * 2.2) * 0.35;
+      gl_FragColor = vec4(vCol * (core + halo), (core + halo) * vA);
+    }`,
+});
+const stars = new THREE.Points(geo, mat);
+scene.add(stars);
+
+// cross-language bridges: same Wikidata topic in fi / sv / en
+const L = D.links, lpos = new Float32Array(L.length * 3);
+for (let k = 0; k < L.length; k++) lpos.set(pos.subarray(L[k] * 3, L[k] * 3 + 3), k * 3);
+const lgeo = new THREE.BufferGeometry(); lgeo.setAttribute("position", new THREE.BufferAttribute(lpos, 3));
+const bridges = new THREE.LineSegments(lgeo, new THREE.LineBasicMaterial({
+  color: 0xa8c4ff, transparent: true, opacity: 0.07, blending: THREE.AdditiveBlending, depthWrite: false }));
+bridges.visible = false; scene.add(bridges);
+
+// neighbour threads for the selected star
+const nbGeo = new THREE.BufferGeometry();
+const nbLines = new THREE.LineSegments(nbGeo, new THREE.LineBasicMaterial({
+  color: 0xffffff, transparent: true, opacity: 0.45, blending: THREE.AdditiveBlending, depthWrite: false }));
+scene.add(nbLines);
+
+// ---------- cluster labels ----------
+const labelBox = document.getElementById("labels");
+const shown = D.clusters.filter(c => c.size >= 120);
+const labelEls = shown.map(c => {
+  const el = document.createElement("div");
+  el.className = "clabel"; el.textContent = c.label;
+  el.onclick = () => flyTo(new THREE.Vector3(c.x * SCALE, c.y * SCALE, c.z * SCALE), 26);
+  labelBox.appendChild(el);
+  return { el, v: new THREE.Vector3(c.x * SCALE, c.y * SCALE, c.z * SCALE), size: c.size };
+});
+let labelsOn = true;
+function placeLabels() {
+  const w = innerWidth, h = innerHeight, tmp = new THREE.Vector3(), placed = [];
+  // nearest/biggest first; a label that would overlap one already placed is hidden
+  const order = labelEls.map(L => [L, L.size / (1 + camera.position.distanceTo(L.v) ** 2)]).sort((a, b) => b[1] - a[1]);
+  for (const [L] of order) {
+    tmp.copy(L.v).project(camera);
+    const dist = camera.position.distanceTo(L.v);
+    const vis = labelsOn && tmp.z < 1 && Math.abs(tmp.x) < 1.1 && Math.abs(tmp.y) < 1.1;
+    if (!vis) { L.el.style.opacity = 0; continue; }
+    const x = (tmp.x + 1) / 2 * w, y = (1 - tmp.y) / 2 * h, fs = 11 + Math.min(L.size / 200, 4);
+    const bw = L.el.textContent.length * fs * 0.56 + 10, bh = fs + 8;
+    if (placed.some(r => Math.abs(r[0] - x) < (r[2] + bw) / 2 && Math.abs(r[1] - y) < (r[3] + bh) / 2)) { L.el.style.opacity = 0; continue; }
+    placed.push([x, y, bw, bh]);
+    L.el.style.left = x + "px"; L.el.style.top = y + "px"; L.el.style.fontSize = fs + "px";
+    const near = THREE.MathUtils.clamp(1.4 - dist / 120, 0, 1);
+    L.el.style.opacity = (near * (0.45 + Math.min(L.size / 1500, 0.55))).toFixed(2);
+  }
+}
+
+// ---------- time ----------
+const slider = document.getElementById("slider"), yearEl = document.getElementById("year"),
+      playBtn = document.getElementById("play"), capL = document.getElementById("capL"), capR = document.getElementById("capR");
+let playing = false;
+const bornBy = y => { let n = 0; for (let i = 0; i < N; i++) if (birth[i] >= 0 && birth[i] <= y) n++; return n; };
+// the biggest flare of each year: the article with most edits that year (Finnish only)
+const busiest = [];
+for (let y = 0; y < NY; y++) {
+  let best = -1, bv = 0;
+  for (let i = 0; i < N; i++) { const v = actBytes[i * NY + y]; if (v > bv) { bv = v; best = i; } }
+  busiest.push(best);
+}
+function setYear(y, fromSlider) {
+  uniforms.uYear.value = y;
+  if (!fromSlider) slider.value = y;
+  const yi = Math.min(Math.floor(y), Y1);
+  yearEl.textContent = yi;
+  if (uniforms.uTimeOn.value) {
+    const b = busiest[yi - Y0];
+    capL.textContent = `${bornBy(y).toLocaleString()} articles exist`;
+    capR.innerHTML = b >= 0 ? `brightest flare: <b style="color:#fff">${D.title[b]}</b>` : "";
+  }
+}
+function timeOn(on) {
+  uniforms.uTimeOn.value = on ? 1 : 0;
+  if (!on) { capL.textContent = "All articles as of today. Press play to replay their history."; capR.textContent = ""; }
+}
+slider.oninput = () => { timeOn(true); setYear(+slider.value, true); };
+function togglePlay() {
+  playing = !playing; playBtn.textContent = playing ? "❚❚" : "▶";
+  if (playing) { timeOn(true); if (uniforms.uYear.value >= Y1 + 0.7) setYear(Y0); }
+}
+playBtn.onclick = togglePlay;
+addEventListener("keydown", e => { if (e.code === "Space" && document.activeElement.tagName !== "INPUT") { e.preventDefault(); togglePlay(); } });
+
+// births histogram above the slider
+{
+  const cv = document.getElementById("births"), r = devicePixelRatio;
+  cv.width = cv.clientWidth * r; cv.height = cv.clientHeight * r;
+  const g = cv.getContext("2d"), bins = new Array(96).fill(0), span = (Y1 + 0.75 - Y0);
+  for (let i = 0; i < N; i++) if (birth[i] >= 0) bins[Math.min(95, Math.floor((birth[i] - Y0) / span * 96))]++;
+  const mx = Math.max(...bins), bw = cv.width / 96;
+  g.fillStyle = "rgba(138,180,255,.45)";
+  bins.forEach((b, k) => { const hh = b / mx * cv.height; g.fillRect(k * bw + 0.5 * r, cv.height - hh, bw - r, hh); });
+}
+
+// ---------- picking, panel, search ----------
+const ray = new THREE.Raycaster(), mouse = new THREE.Vector2(), tip = document.getElementById("tip");
+let hover = -1;
+function visible(i) { return !uniforms.uTimeOn.value || birth[i] < 0 || birth[i] <= uniforms.uYear.value; }
+function pick(ev) {
+  mouse.set(ev.clientX / innerWidth * 2 - 1, -ev.clientY / innerHeight * 2 + 1);
+  ray.setFromCamera(mouse, camera);
+  ray.params.Points.threshold = Math.max(0.15, camera.position.distanceTo(controls.target) / 160);
+  const hits = ray.intersectObject(stars).filter(h => visible(h.index));
+  hits.sort((a, b) => a.distanceToRay - b.distanceToRay);
+  return hits.length ? hits[0].index : -1;
+}
+renderer.domElement.addEventListener("pointermove", ev => {
+  hover = pick(ev);
+  if (hover < 0) { tip.style.display = "none"; renderer.domElement.style.cursor = ""; return; }
+  renderer.domElement.style.cursor = "pointer";
+  tip.style.display = "block";
+  tip.style.left = (ev.clientX + 14) + "px"; tip.style.top = (ev.clientY + 12) + "px";
+  const v = D.versions[hover];
+  tip.innerHTML = `<span class="lang ${D.lang[hover]}">${LANGS[D.lang[hover]]}</span> ${D.title[hover]}` +
+    (v ? `<div style="color:var(--mute);font-size:12px;margin-top:2px">${v.toLocaleString()} versions · since ${Math.floor(birth[hover])}</div>` : "");
+});
+let downAt = null;
+renderer.domElement.addEventListener("pointerdown", ev => downAt = [ev.clientX, ev.clientY]);
+renderer.domElement.addEventListener("pointerup", ev => {
+  if (!downAt || Math.hypot(ev.clientX - downAt[0], ev.clientY - downAt[1]) > 4) return;
+  const i = pick(ev);
+  if (i >= 0) select(i); else deselect();
+});
+
+const panel = document.getElementById("panel");
+const byKey = new Map(); for (let i = 0; i < N; i++) byKey.set(D.lang[i] + D.page_id[i], i);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
+function starPos(i) { return new THREE.Vector3(pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2]); }
+function deselect() { uniforms.uSel.value = -1; uniforms.uDim.value = 0; panel.style.display = "none"; nbGeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(0), 3)); }
+
+async function select(i) {
+  uniforms.uSel.value = i; uniforms.uDim.value = 0;
+  controls.autoRotate = false;
+  flyTo(starPos(i), 14);
+  const lang = LANGS[D.lang[i]], pid = D.page_id[i];
+  panel.style.display = "block";
+  panel.innerHTML = `<button class="close" title="Close">×</button>
+    <span class="lang ${D.lang[i]}">${lang}</span>
+    <h2>${esc(D.title[i])}</h2>
+    <div class="sub">Topic: ${esc(D.clusters[clusterIdx.get(D.cluster[i])]?.label)}</div>
+    <div id="pbody" class="sub" style="margin-top:12px">Loading…</div>`;
+  panel.querySelector(".close").onclick = deselect;
+
+  const [a, nb] = await Promise.all([
+    fetch(`/api/galaxy/article/${lang}/${pid}`).then(r => r.json()),
+    fetch(`/api/galaxy/neighbors/${lang}/${pid}?k=12`).then(r => r.json()),
+  ]);
+  if (uniforms.uSel.value !== i) return;
+  const h = a.history;
+  const others = D.links.reduce((acc, v, k) => {
+    if (v === i) acc.push(D.links[k % 2 ? k - 1 : k + 1]); return acc; }, []);
+  let html = `<div class="intro">${esc((a.intro || "").replace(/^#.*\n/, "").slice(0, 380))}…</div>
+    <a href="${esc(a.url)}" target="_blank" rel="noopener">Open on Wikipedia ↗</a>`;
+  if (h && h.versions) {
+    html += `<div class="stats">
+      <div class="stat"><b>${(+h.versions).toLocaleString()}</b><span>versions</span></div>
+      <div class="stat"><b>${(+h.editors).toLocaleString()}</b><span>editors</span></div>
+      <div class="stat"><b style="color:var(--rev)">${(+h.reverts).toLocaleString()}</b><span>reverts</span></div></div>
+      <h3>Edits per year, ${Y0}–${Y1}</h3><canvas id="spark"></canvas>
+      <div class="sub">First written ${String(h.first_edit).slice(5, 16)}${+h.has_text ? ` · <a href="seismograph.html#${pid}">read it as it stood on any day →</a>` : ""}</div>`;
+  }
+  if (others.length) html += `<h3>Same topic in other languages</h3>` + others.map(o =>
+    `<div class="nb" data-i="${o}"><span class="lang ${D.lang[o]}">${LANGS[D.lang[o]]}</span>${esc(D.title[o])}</div>`).join("");
+  html += `<h3>Nearest in meaning · MariaDB vector search, ${nb.ms} ms</h3>` + (nb.neighbors || []).map(n => {
+    const j = byKey.get({ fi: "f", sv: "s", en: "e" }[n.lang] + n.page_id);
+    return `<div class="nb" data-i="${j ?? ""}"><span class="lang ${{ fi: "f", sv: "s", en: "e" }[n.lang]}">${n.lang}</span>${esc(n.title)}<span class="d">${n.distance.toFixed(3)}</span></div>`;
+  }).join("") + `<details><summary>The SQL</summary><pre class="sql">${esc(nb.sql)}</pre></details>`;
+  document.getElementById("pbody").outerHTML = `<div>${html}</div>`;
+  panel.querySelectorAll(".nb[data-i]").forEach(el => { if (el.dataset.i !== "") el.onclick = () => select(+el.dataset.i); });
+
+  // threads from the star to its neighbours
+  const js = (nb.neighbors || []).map(n => byKey.get({ fi: "f", sv: "s", en: "e" }[n.lang] + n.page_id)).filter(j => j != null);
+  const lp = new Float32Array(js.length * 6);
+  js.forEach((j, k) => { lp.set(pos.subarray(i * 3, i * 3 + 3), k * 6); lp.set(pos.subarray(j * 3, j * 3 + 3), k * 6 + 3); });
+  nbGeo.setAttribute("position", new THREE.BufferAttribute(lp, 3));
+
+  const yearly = new Array(NY).fill(0);
+  for (const r of (a.yearly || [])) yearly[r.y - Y0] = r.n;
+  const cv = document.getElementById("spark");
+  if (cv) {
+    const r = devicePixelRatio; cv.width = cv.clientWidth * r; cv.height = cv.clientHeight * r;
+    const g = cv.getContext("2d"), mx = Math.max(1, ...yearly), bw = cv.width / NY;
+    yearly.forEach((v, k) => {
+      const hh = Math.max(v ? 2 * r : 0, v / mx * (cv.height - 26 * r));   // headroom for the peak label
+      g.fillStyle = `hsla(${215 - 180 * v / mx}, 90%, 68%, .9)`;
+      g.fillRect(k * bw + r, cv.height - 10 * r - hh, bw - 2 * r, hh);
+    });
+    g.fillStyle = "#8a93a8"; g.font = `${10 * r}px "Instrument Sans"`;
+    g.fillText(Y0, 0, cv.height - r); g.textAlign = "right"; g.fillText(Y1, cv.width, cv.height - r);
+    const peak = yearly.indexOf(mx);
+    g.fillStyle = "#c3c9d6"; const lbl = `${mx.toLocaleString()} edits in ${Y0 + peak}`;
+    g.textAlign = peak * bw > cv.width / 2 ? "right" : "left";
+    g.fillText(lbl, g.textAlign === "right" ? peak * bw + bw : peak * bw, 11 * r);
+  }
+}
+
+// fly the camera to a point
+let fly = null;
+function flyTo(target, dist) {
+  const dir = camera.position.clone().sub(controls.target).normalize();
+  fly = { t: 0, p0: camera.position.clone(), c0: controls.target.clone(),
+          p1: target.clone().add(dir.multiplyScalar(dist)), c1: target.clone() };
+}
+
+const search = document.getElementById("search"), results = document.getElementById("results");
+const lowTitles = D.title.map(t => (t || "").toLowerCase());
+search.oninput = () => {
+  const q = search.value.trim().toLowerCase();
+  if (q.length < 2) { results.innerHTML = ""; return; }
+  const hits = [];
+  for (let i = 0; i < N && hits.length < 60; i++) if (lowTitles[i].includes(q)) hits.push(i);
+  hits.sort((a, b) => (lowTitles[b].startsWith(q) - lowTitles[a].startsWith(q)) || D.versions[b] - D.versions[a]);
+  results.innerHTML = hits.slice(0, 12).map(i => `<div data-i="${i}"><span class="lang ${D.lang[i]}">${LANGS[D.lang[i]]}</span>${esc(D.title[i])}</div>`).join("");
+  results.querySelectorAll("div").forEach(el => el.onclick = () => { select(+el.dataset.i); results.innerHTML = ""; search.value = ""; });
+};
+
+document.querySelectorAll("#colorModes [data-mode]").forEach(b => b.onclick = () => {
+  document.querySelectorAll("#colorModes [data-mode]").forEach(x => x.classList.toggle("on", x === b));
+  uniforms.uMode.value = +b.dataset.mode;
+});
+document.getElementById("bridges").onclick = e => { bridges.visible = !bridges.visible; e.target.classList.toggle("on", bridges.visible); };
+document.getElementById("labelsBtn").onclick = e => { labelsOn = !labelsOn; e.target.classList.toggle("on", labelsOn); };
+
+addEventListener("resize", () => {
+  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+// deep link: galaxy.html#fi:1256
+if (location.hash.length > 1) {
+  const [l, p] = location.hash.slice(1).split(":");
+  const j = byKey.get(({ fi: "f", sv: "s", en: "e" }[l] || "f") + p);
+  if (j != null) setTimeout(() => select(j), 300);
+}
+timeOn(false);
+const qy = +new URLSearchParams(location.search).get("year");   // galaxy.html?year=2007.9
+if (qy >= Y0 && qy <= Y1 + 0.75) { timeOn(true); setYear(qy); }
+
+// ---------- loop ----------
+const clock = new THREE.Clock();
+renderer.setAnimationLoop(() => {
+  const dt = Math.min(clock.getDelta(), 0.05);
+  uniforms.uClock.value += dt;
+  if (playing) {
+    let y = uniforms.uYear.value + dt * 0.9;           // ~26 s for the whole history
+    if (y >= Y1 + 0.75) { y = Y1 + 0.75; togglePlay(); }
+    setYear(y);
+  }
+  if (fly) {
+    fly.t = Math.min(1, fly.t + dt * 0.9);
+    const e = fly.t < .5 ? 4 * fly.t ** 3 : 1 - (-2 * fly.t + 2) ** 3 / 2;
+    camera.position.lerpVectors(fly.p0, fly.p1, e);
+    controls.target.lerpVectors(fly.c0, fly.c1, e);
+    if (fly.t >= 1) fly = null;
+  }
+  controls.update();
+  placeLabels();
+  renderer.render(scene, camera);
+});
+</script>
+</body>
+</html>

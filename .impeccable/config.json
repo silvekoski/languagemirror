@@ -1,0 +1,32 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "wide-tracking",
+        "value": "*",
+        "files": [
+          "web/galaxy.html"
+        ],
+        "createdAt": "2026-11-13T16:48:40.397Z",
+        "reason": "Claude: tracking >.05em is only on short uppercase labels (#panel h3 section headings, loading banner), the rule's own allowed exception"
+      },
+      {
+        "rule": "overused-font",
+        "value": "instrument sans",
+        "createdAt": "2026-11-13T16:58:04.968Z",
+        "reason": "Claude: deliberate project body face in web/theme.css, paired with Newsreader serif headings; chosen to replace Inter after the earlier finding; not on the rule's named list"
+      },
+      {
+        "rule": "dark-glow",
+        "value": "*",
+        "files": [
+          "web/typewriter.html"
+        ],
+        "createdAt": "2026-11-13T19:24:35.830Z",
+        "reason": "Typewriter replay: the warm zero-offset text-shadow on .lead .ins (#ffc45c) marks words newly inserted by the current edit and fades as they settle; it encodes the diff, not decoration (decorative caret glow was removed)"
+      }
+    ]
+  }
+}

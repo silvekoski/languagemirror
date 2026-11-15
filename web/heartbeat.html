@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="demo-title" content="Heartbeat">
+<meta name="demo-desc" content="The rhythm of editing: all 862,076 edits on the calendar and the clock (Helsinki time), who made them, and what each era of Finnish history-writing was busy with.">
+<meta name="demo-tags" content="time,calendar,editors,FOR SYSTEM_TIME">
+<meta name="demo-order" content="4">
+<title>Heartbeat — Wikipedia Through Time</title>
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="heartbeat.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="home" href="/">Wikipedia Through Time</a>
+  <span class="crumb">/ Heartbeat</span>
+  <div class="grow"></div>
+  <span class="flabel">Edits by</span>
+  <nav class="chips" id="filters" aria-label="Who made the edits"></nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Heartbeat</h1>
+      <p class="lede">Every one of the <b id="ledeN">862,076</b> versions of Finnish Wikipedia's history-of-Finland
+        articles, <span id="ledeSpan">February 2003 to October 2026</span>, placed on the calendar and on the clock (Helsinki time). Knowledge doesn't change at a steady pace: it moves in pulses —
+        election months, one-person clean-up campaigns, and more and more often bots that sweep through a thousand articles in a single day.</p>
+      <div class="pulse"><svg id="pulse" aria-label="Edits per week, 2003 to 2026"></svg></div>
+    </div>
+    <div class="findings" id="findings"></div>
+  </section>
+
+  <section class="sec" id="cal">
+    <div class="sec-head">
+      <div>
+        <h2>Every day since 2003</h2>
+        <p class="sub">One row per year, one cell per day (Helsinki date). Hover a day for what was edited, click it to open the day.</p>
+      </div>
+      <div class="ctrls">
+        <label>Measure</label><div class="chips" id="metricChips"></div>
+        <label>Scale</label><div class="chips" id="scaleChips"></div>
+        <label>Layout</label><div class="chips" id="layoutChips"></div>
+      </div>
+    </div>
+    <div class="legend-row"><div id="calLegend" class="legend"></div><div class="mixlegend" id="mixLegend"></div></div>
+    <div id="calStrips" class="strips"></div>
+    <div class="tryrow" id="tryRow"></div>
+    <div id="calWeeks" class="weeks" hidden></div>
+  </section>
+
+  <section class="sec" id="clock">
+    <div class="sec-head">
+      <div>
+        <h2>Around the clock</h2>
+        <p class="sub">Weekday × hour in Helsinki local time, summed over each era. Shares make eras of different size comparable.</p>
+      </div>
+      <div class="ctrls">
+        <label>View</label><div class="chips" id="cviewChips"></div>
+        <label>Values</label><div class="chips" id="cvalChips"></div>
+      </div>
+    </div>
+    <div id="clockBody"></div>
+    <p class="note" id="clockNote"></p>
+  </section>
+
+  <section class="sec" id="ridges">
+    <div class="sec-head">
+      <div>
+        <h2>What was being written about</h2>
+        <p class="sub">Monthly edits in the biggest categories. Each ridge is labelled with the article that drove its highest month.</p>
+      </div>
+      <div class="ctrls">
+        <label>Pick</label><div class="chips" id="rankChips"></div>
+        <label>Show</label><div class="chips" id="nrChips"></div>
+        <label>Order</label><div class="chips" id="orderChips"></div>
+        <label>Height</label><div class="chips" id="rscaleChips"></div>
+        <label>Smooth</label><div class="chips" id="smoothChips"></div>
+      </div>
+    </div>
+    <div class="legend-row"><div class="legend" id="ridgeLegend"></div></div>
+    <div id="ridgeWrap"><svg id="ridgeSvg"></svg></div>
+  </section>
+
+  <section class="sec sqlsec">
+    <details id="sqlBox">
+      <summary>The SQL <span class="mute">— precompute, the live day query, and FOR SYSTEM_TIME AS OF</span></summary>
+      <div id="sqlBody"></div>
+    </details>
+    <p class="method">
+      Edits are versions in <span class="mono">revision</span> (metadata of every version, 2003-02-21 → 2026-10-01).
+      Times are converted from UTC to Europe/Helsinki (EET/EEST). <b class="k0">Registered</b> = a logged-in account,
+      <b class="k1">anonymous</b> = IP address or temporary account, <b class="k2">bot</b> = account name ending in “bot” (also “bot2”, “bot~fiwiki”, “(bot)”) or starting with “Bot”.
+      Categories are the article's direct Finnish categories (<span class="mono">article_category</span>).
+      A day counts as “driven” by one editor when they made at least half of its edits.
+    </p>
+  </section>
+</main>
+
+<aside id="drawer" class="panel" aria-hidden="true"></aside>
+<div id="tip" class="tip" hidden></div>
+<div id="loading">listening for a pulse…</div>
+<script type="module" src="heartbeat.js"></script>
+</body>
+</html>

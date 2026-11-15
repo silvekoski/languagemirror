@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="demo-title" content="Time Grep">
+<meta name="demo-desc" content="grep through time: find when a phrase entered an article, who removed it, how its sentence was reworded, and which articles said it on any date (FOR SYSTEM_TIME ALL / AS OF).">
+<meta name="demo-tags" content="text,system-versioning,search">
+<meta name="demo-order" content="12">
+<title>Time Grep — Wikipedia Through Time</title>
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="timegrep.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="home" href="/">Wikipedia Through Time</a>
+  <span class="crumb">/</span><span class="crumb now">Time Grep</span>
+  <nav class="modes" role="tablist">
+    <button class="chip on" data-mode="article" role="tab">One article, every version</button>
+    <button class="chip" data-mode="wiki" role="tab">Whole wiki, at a date</button>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>Time Grep</h1>
+    <p class="lede" id="lede"></p>
+  </section>
+
+  <!-- ===================== mode 1: one article ===================== -->
+  <section id="m-article">
+    <form id="f-article" class="controls" autocomplete="off">
+      <label class="field art">
+        <span>Article</span>
+        <input id="art" type="search" placeholder="Talvisota" spellcheck="false">
+        <div id="sugg" class="sugg panel" hidden></div>
+      </label>
+      <label class="field pat">
+        <span>Word, phrase or regex</span>
+        <input id="pat" type="search" placeholder="105 päivää" spellcheck="false" maxlength="80">
+      </label>
+      <button class="go" type="submit">grep</button>
+    </form>
+    <div class="presets" id="p-article"></div>
+
+    <p class="headline" id="h-article"></p>
+
+    <div class="panel strip-panel">
+      <div class="strip-head">
+        <div class="legend">
+          <span><i class="sw lit"></i>phrase present</span>
+          <span><i class="sw off"></i>absent</span>
+          <span><i class="mk first"></i>first appearance</span>
+          <span><i class="mk gone"></i>removed</span>
+          <span><i class="mk back"></i>restored</span>
+        </div>
+        <div class="axis-toggle">
+          <button class="chip on" data-axis="time">by date</button>
+          <button class="chip" data-axis="edit">edit by edit</button>
+        </div>
+      </div>
+      <div id="strip"></div>
+      <details class="sql"><summary>The SQL <span id="sql-meta-a" class="mute"></span></summary><pre id="sql-a"></pre></details>
+    </div>
+
+    <div class="cols">
+      <div class="col-l">
+        <h2 class="sec">First appearance</h2>
+        <div id="first" class="panel card"></div>
+        <h2 class="sec">Removed &amp; restored <span id="n-events" class="mute"></span></h2>
+        <div id="events"></div>
+      </div>
+      <div class="col-r">
+        <h2 class="sec">The sentence, rewritten <span id="n-word" class="mute"></span></h2>
+        <p class="sub">Every distinct wording of the sentence that holds the match, in order of first appearance. Bars show when each wording was live (2003→2026). Highlights show what changed against the last wording that lasted a day or more; short-lived ones, mostly vandalism, are dimmed.</p>
+        <div id="wordings"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== mode 2: whole wiki ===================== -->
+  <section id="m-wiki" hidden>
+    <form id="f-wiki" class="controls" autocomplete="off">
+      <label class="field pat">
+        <span>Word or phrase</span>
+        <input id="wq" type="search" placeholder="Mannerheim" spellcheck="false" maxlength="80">
+      </label>
+      <button class="go" type="submit">grep the wiki</button>
+    </form>
+    <div class="presets" id="p-wiki"></div>
+    <p class="headline" id="h-wiki"></p>
+
+    <div class="wiki-grid">
+      <div class="panel bars-panel">
+        <div class="bars-head">
+          <div class="legend">
+            <span><i class="sw lit"></i>said it on that date</span>
+            <span><i class="sw ghost"></i>existed, but didn't say it yet</span>
+          </div>
+        </div>
+        <div id="bars"></div>
+        <p class="note" id="cap-note"></p>
+        <details class="sql"><summary>The SQL <span id="sql-meta-w" class="mute"></span></summary><pre id="sql-w"></pre></details>
+      </div>
+      <div class="hits-wrap">
+        <h2 class="sec" id="hits-title"></h2>
+        <div id="dropped" class="dropped"></div>
+        <div id="hits"></div>
+      </div>
+    </div>
+  </section>
+</main>
+<div id="tip" class="tip" hidden></div>
+<script type="module" src="timegrep.js"></script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+Every paragraph is a vector in a system-versioned MariaDB table with a vector index. Vector search, together with for system time as of, does the matching, the scores and the history.

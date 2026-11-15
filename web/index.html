@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wikipedia Through Time</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+  body { min-height: 100vh; background: radial-gradient(1200px 600px at 75% -10%, rgba(138,180,255,.10), transparent 60%), var(--bg); }
+  main { max-width: 1180px; margin: 0 auto; padding: 56px 20px 80px; }
+  header p { max-width: 720px; color: var(--ink-2); font-size: 17px; margin: 14px 0 0; }
+  .facts { display: flex; flex-wrap: wrap; gap: 28px; margin: 28px 0 40px; }
+  .facts b { display: block; font: 300 30px/1 var(--serif); }
+  .facts span { color: var(--mute); font-size: 13px; }
+  #grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+  .card { display: block; padding: 20px 20px 18px; color: inherit; transition: transform .15s, border-color .15s; }
+  .card:hover { text-decoration: none; transform: translateY(-2px); border-color: rgba(138,180,255,.35); }
+  .card h2 { font-size: 22px; margin-bottom: 8px; }
+  .card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+  .tags { margin-top: 14px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .tags span { font: 12px var(--mono); color: var(--mute); border: 1px solid var(--line); padding: 3px 8px; border-radius: 5px; }
+  footer { margin-top: 48px; color: var(--mute); font-size: 13px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Wikipedia Through Time</h1>
+    <p>Twenty-three years of the Finnish Wikipedia's history of Finland: every saved version in a
+      MariaDB <em>system-versioned</em> table with its real edit time, and every article as a vector
+      for semantic search. Pick a lens.</p>
+  </header>
+  <div class="facts">
+    <div><b>862,076</b><span>versions, 2003–2026</span></div>
+    <div><b>19,742</b><span>Finnish articles with full history</span></div>
+    <div><b>29,460</b><span>articles in fi · sv · en with vectors</span></div>
+    <div><b>1</b><span>database: MariaDB 12.3</span></div>
+  </div>
+  <div id="grid" class="mute">Loading demos…</div>
+  <footer>Text: Wikipedia, CC BY-SA 4.0. Data: MariaDB Foundation's Wikipedia datasets. Junction 2026.</footer>
+</main>
+<script>
+fetch("/api/demos").then(r => r.json()).then(ds => {
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  document.getElementById("grid").innerHTML = ds.map(d => `<a class="card panel" href="${esc(d.page)}">
+    <h2>${esc(d.title)}</h2><p>${esc(d.desc)}</p>
+    <div class="tags">${d.tags.filter(Boolean).map(t => `<span>${esc(t)}</span>`).join("")}</div></a>`).join("");
+});
+</script>
+</body>
+</html>

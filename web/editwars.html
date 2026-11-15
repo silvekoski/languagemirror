@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="demo-title" content="Edit Wars">
+<meta name="demo-desc" content="Who undoes whom: 45,626 reverts across 23 years, split into vandalism cleanup and real edit wars between registered editors, with the text each revert threw away read back through FOR SYSTEM_TIME AS OF.">
+<meta name="demo-tags" content="reverts,network,system-versioning,time">
+<meta name="demo-order" content="3">
+<title>Edit Wars — Wikipedia Through Time</title>
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="editwars.css">
+</head>
+<body>
+<nav class="topbar">
+  <a class="home" href="/">Wikipedia Through Time</a>
+  <span class="crumb">/</span><span class="crumb now">Edit Wars</span>
+  <span class="grow"></span>
+  <span class="mono mute" id="dbstat"></span>
+</nav>
+
+<header id="hero">
+  <div class="lede">
+    <h1>Edit <em>Wars</em></h1>
+    <p>Every time someone puts back an older text, somebody else's words disappear. We found all
+      <b id="nRev">…</b> reverts in 23 years of Finland's history on Finnish Wikipedia and sorted
+      them: most are cleanup of vandalism within minutes, but <b class="c-war" id="nWar">…</b> are
+      <span class="c-war">edit wars</span>, two registered editors undoing each other until one gives up.
+      That is where the encyclopedia's knowledge was actually contested.</p>
+  </div>
+  <figure id="globalFig" class="panel">
+    <figcaption><span id="globalCap">Reverts per year, all 19,742 articles · click a year</span>
+      <span class="legend" id="legend"></span></figcaption>
+    <svg id="global"></svg>
+  </figure>
+</header>
+
+<main id="grid">
+  <aside id="board" class="panel">
+    <div class="tabs">
+      <button class="tab on" data-tab="articles">Most contested</button>
+      <button class="tab" data-tab="rivals">Fiercest rivalries</button>
+    </div>
+    <div id="boardArticles">
+      <div class="boardctl">
+        <input type="search" id="q" placeholder="Find an article…" autocomplete="off">
+        <select id="sort" title="Rank articles by">
+          <option value="war">Edit-war reverts</option>
+          <option value="pairs">Warring pairs</option>
+          <option value="dispute">One-way disputes</option>
+          <option value="vandal">Vandalism cleanup</option>
+          <option value="reverts">All reverts</option>
+          <option value="rate">Revert rate (≥100 versions)</option>
+          <option value="recent">Most recent revert</option>
+        </select>
+      </div>
+      <div id="yearFilter" class="yearfilter" hidden></div>
+      <ol id="list"></ol>
+    </div>
+    <ol id="rivals" hidden></ol>
+  </aside>
+
+  <section id="stage" class="panel">
+    <div class="stagehead">
+      <h2 id="title">…</h2>
+      <div class="statrow" id="stats"></div>
+    </div>
+    <div class="sub" id="sub"></div>
+    <div class="netctl">
+      <span id="clsChips"></span>
+      <span class="sep"></span>
+      <button class="chip" id="groupAnon" title="Merge all anonymous (IP) editors into one node">Group IPs</button>
+      <button class="chip" id="labelsBtn" title="Label every editor">Names</button>
+      <span id="netNote"></span>
+    </div>
+    <div id="netWrap">
+      <label class="minw" title="Hide editor pairs with fewer reverts than this">pairs with ≥ <input type="range" id="minW" min="1" max="5" value="1"><b id="minWv">1</b> revert(s)</label>
+      <svg id="net"></svg>
+      <div id="netKey">
+        <span><i class="k-reg"></i>registered</span><span><i class="k-anon"></i>anonymous</span><span><i class="k-bot"></i>bot</span>
+        <span class="mute" title="Node size = the editor's edits to this article. Arrow points from the reverter to the reverted editor; line width = number of reverts.">size = edits · reverter → reverted</span>
+      </div>
+      <div id="netEmpty" hidden>No reverts of the selected kinds in this period.</div>
+    </div>
+  </section>
+
+  <aside id="side" class="panel">
+    <p id="story"></p>
+    <section id="pairsBox">
+      <h3>Rivalries in this article</h3>
+      <div id="pairs"></div>
+    </section>
+    <section id="evBox">
+      <h3 id="evHead">Selected revert</h3>
+      <div id="ev"><p class="mute small">Click a revert on the war timeline to see who undid whom, and what text was thrown away.</p></div>
+    </section>
+  </aside>
+
+  <section id="timeline" class="panel">
+    <div class="tlhead">
+      <h3>War timeline <span class="mute" id="tlCap"></span></h3>
+      <span class="grow"></span>
+      <span class="ctl-label">x-axis</span>
+      <button class="chip on" data-x="time">calendar</button>
+      <button class="chip" data-x="seq">one step per revert</button>
+      <span class="sep"></span>
+      <button class="chip" id="zoomWar">Zoom to the war</button>
+      <button class="chip" id="zoomAll">Whole history</button>
+    </div>
+    <svg id="lanes"></svg>
+    <svg id="context"></svg>
+    <details class="sqlbox">
+      <summary>The SQL</summary>
+      <div class="sqlgrid">
+        <div><h4>How reverts are found (precomputed for all 19,742 articles)</h4><pre class="sql" id="sqlDerive"></pre></div>
+        <div><h4>This article (<span id="sqlMs"></span>)</h4><pre class="sql" id="sqlArticle"></pre>
+          <h4>What a revert threw away: system-versioned time travel</h4><pre class="sql" id="sqlDiff">Select a revert in an article whose text history is loaded.</pre></div>
+      </div>
+    </details>
+  </section>
+</main>
+<footer class="foot mute">Revert = a version whose text is byte-identical (sha1) to an earlier one but not to the previous one; the versions in between were undone.
+  <b class="c-war">Edit war</b>: both editors registered and each has reverted the other in this article.
+  <b class="c-dispute">Dispute</b>: a registered editor undone by another, one-way.
+  <b class="c-vandal">Vandalism cleanup</b>: the undone editor is anonymous, or was undone within 24 h with ≤ 10 edits in total.
+  <b class="c-bot">Bot</b>: reverted by a bot. <b class="c-self">Self</b>: editors undoing themselves.
+  Text: Wikipedia, CC BY-SA 4.0.</footer>
+<div id="tip" class="tip" hidden></div>
+<script type="module" src="editwars.js"></script>
+</body>
+</html>

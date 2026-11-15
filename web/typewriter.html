@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="demo-title" content="Typewriter">
+<meta name="demo-desc" content="Watch an article's opening paragraphs being written, edit by edit: every version replayed from MariaDB's system-versioned history with a word-level diff.">
+<meta name="demo-tags" content="system-versioning,text,replay">
+<meta name="demo-order" content="8">
+<title>Typewriter — Wikipedia Through Time</title>
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="typewriter.css">
+</head>
+<body>
+<nav class="topbar">
+  <a class="home" href="/">Wikipedia Through Time</a><span class="mute">/ Typewriter</span>
+  <div class="pick">
+    <select id="pick" aria-label="Article"></select>
+    <input id="q" type="search" placeholder="Any article with history…" autocomplete="off" aria-label="Search articles">
+    <div id="qres" class="panel"></div>
+  </div>
+</nav>
+
+<main id="app">
+  <header class="head">
+    <div>
+      <h1 id="title">Typewriter</h1>
+      <p class="sub mono" id="kicker">&nbsp;</p>
+    </div>
+    <div class="stats" id="stats"></div>
+    <p class="lede">The opening section of a Wikipedia article, replayed through every stored version
+      (<code>FOR SYSTEM_TIME ALL</code>). Typed words glow, deleted words strike through in red: the lead is
+      where editors decide what matters most about a topic, and here you can watch that judgement form,
+      get argued over and get reverted.</p>
+  </header>
+
+  <section class="paper panel" id="paperWrap">
+    <div class="paperhead">
+      <span id="vdate" class="vdate">&nbsp;</span>
+      <span id="vnote" class="vnote mute"></span>
+    </div>
+    <div id="notice" class="notice" hidden></div>
+    <article id="paper" class="lead" lang="fi"></article>
+  </section>
+
+  <aside class="side">
+    <div class="panel card" id="now"></div>
+    <div class="panel card bigcard">
+      <h2>Biggest changes to the lead</h2>
+      <ol id="big" class="big"></ol>
+    </div>
+    <details class="panel card sqlbox">
+      <summary>The SQL</summary>
+      <pre id="sql" class="sql"></pre>
+      <p class="mute small">Only the lead (wikitext before the first <code>==</code> heading) leaves the
+        database, and only for versions where it changed. Texts load lazily, <span id="chunkn">50</span>
+        changed leads at a time.</p>
+    </details>
+  </aside>
+
+  <section class="time panel">
+    <div class="controls">
+      <button id="play" class="play" title="Play / pause (space)">▶</button>
+      <button id="restart" class="chip" title="Replay from the first version">⟲ from start</button>
+      <button id="prevc" class="chip" title="Previous lead change (←)">◀ change</button>
+      <button id="nextc" class="chip" title="Next lead change (→)">change ▶</button>
+      <div class="speeds" id="speeds">
+        <button class="chip" data-s="1">1×</button><button class="chip" data-s="5">5×</button><button
+        class="chip on" data-s="10">10×</button><button class="chip" data-s="20">20×</button><button
+        class="chip" data-s="50">50×</button>
+      </div>
+      <span id="counter" class="counter mono"></span>
+    </div>
+    <div class="scrub" id="scrubWrap">
+      <canvas id="scrub"></canvas>
+    </div>
+    <div class="legend">
+      <span><i class="lg reg"></i>registered</span><span><i class="lg anon"></i>anonymous</span>
+      <span><i class="lg bot"></i>bot</span><span><i class="lg rev"></i>revert</span>
+      <span><i class="lg area"></i>lead length (words)</span>
+      <span class="mute">tall ticks = the lead changed · one tick per version</span>
+    </div>
+  </section>
+</main>
+<div id="tip" class="tip" hidden></div>
+<script type="module" src="typewriter.js"></script>
+</body>
+</html>

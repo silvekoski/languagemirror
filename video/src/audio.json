@@ -1,0 +1,102 @@
+{
+ "cues": [
+  {
+   "frame": 0,
+   "sound": "logo",
+   "volume": 0.5
+  },
+  {
+   "frame": 75,
+   "sound": "whoosh",
+   "volume": 0.22
+  },
+  {
+   "frame": 370,
+   "sound": "pop",
+   "volume": 0.3
+  },
+  {
+   "frame": 434,
+   "sound": "pop",
+   "volume": 0.3
+  },
+  {
+   "frame": 480,
+   "sound": "hit",
+   "volume": 0.3
+  },
+  {
+   "frame": 519,
+   "sound": "whoosh",
+   "volume": 0.22
+  },
+  {
+   "frame": 674,
+   "sound": "pop",
+   "volume": 0.3
+  },
+  {
+   "frame": 818,
+   "sound": "ping",
+   "volume": 0.25
+  },
+  {
+   "frame": 872,
+   "sound": "whoosh",
+   "volume": 0.22
+  },
+  {
+   "frame": 1241,
+   "sound": "whoosh",
+   "volume": 0.22
+  },
+  {
+   "frame": 1714,
+   "sound": "ping",
+   "volume": 0.28
+  },
+  {
+   "frame": 1774,
+   "sound": "whoosh",
+   "volume": 0.22
+  },
+  {
+   "frame": 2088,
+   "sound": "whoosh",
+   "volume": 0.22
+  },
+  {
+   "frame": 2489,
+   "sound": "whoosh",
+   "volume": 0.22
+  },
+  {
+   "frame": 2544,
+   "sound": "pop",
+   "volume": 0.3
+  },
+  {
+   "frame": 2860,
+   "sound": "pop",
+   "volume": 0.3
+  },
+  {
+   "frame": 2911,
+   "sound": "whoosh",
+   "volume": 0.22
+  },
+  {
+   "frame": 3204,
+   "sound": "swell",
+   "volume": 0.3
+  }
+ ],
+ "typing": {
+  "sound": "type",
+  "volume": 0.18
+ },
+ "music": {
+  "file": "music.mp3",
+  "volume": 0.12
+ }
+}

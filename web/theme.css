@@ -1,0 +1,32 @@
+/* Shared look for all demos: dark "archive at night". Use the tokens; demos may add their own accents. */
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,500&family=JetBrains+Mono:wght@400&display=swap");
+:root {
+  --bg: #07080d; --bg-2: #0d1018; --panel: rgba(16, 19, 30, 0.78); --line: rgba(255, 255, 255, 0.08);
+  --ink: #e8ecf4; --ink-2: #c3c9d6; --mute: #8a93a8; --faint: #4a5168;
+  --accent: #8ab4ff; --warm: #ffb46b; --revert: #ff5468; --anon: #b48cff; --bot: #5fd4b0;
+  --fi: #7fb2ff; --sv: #ffd36e; --en: #ff7d8a;
+  --serif: Newsreader, Georgia, serif; --sans: "Instrument Sans", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+  --r: 14px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 var(--sans); }
+h1, h2 { font-family: var(--serif); font-weight: 500; letter-spacing: -0.01em; margin: 0; }
+h1 { font-size: clamp(28px, 4vw, 44px); line-height: 1.05; }
+h2 { font-size: 24px; line-height: 1.15; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.mute { color: var(--mute); }
+.mono { font-family: var(--mono); font-size: 12px; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+.chip { font: 13px var(--sans); padding: 5px 11px; border-radius: 999px; border: 1px solid var(--line);
+  background: transparent; color: var(--mute); cursor: pointer; }
+.chip.on, .chip:hover { color: var(--ink); background: rgba(138,180,255,.14); border-color: rgba(138,180,255,.4); }
+input[type=text], input[type=search], select { font: 14px var(--sans); color: var(--ink); background: rgba(255,255,255,.04);
+  border: 1px solid var(--line); border-radius: 9px; padding: 8px 11px; outline: none; }
+input:focus, select:focus { border-color: rgba(138,180,255,.5); }
+.topbar { display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-bottom: 1px solid var(--line); }
+.topbar .home { font: 500 15px var(--serif); color: var(--ink-2); }
+.tip { position: fixed; pointer-events: none; z-index: 50; padding: 7px 10px; font-size: 13px;
+  background: rgba(10,12,20,.94); border: 1px solid var(--line); border-radius: 8px; max-width: 340px; }

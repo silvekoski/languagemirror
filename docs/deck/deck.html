@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Wikipedia Through Time — pitch deck</title>
+<link rel="stylesheet" href="../../web/theme.css">
+<style>
+  @page { size: 1920px 1080px; margin: 0; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font: 30px/1.4 var(--sans);
+    -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .slide { position: relative; width: 1920px; height: 1080px; overflow: hidden; box-sizing: border-box;
+    padding: 84px 110px 100px; page-break-after: always; break-after: page;
+    background: radial-gradient(1400px 700px at 80% -15%, rgba(138,180,255,.10), transparent 60%), var(--bg); }
+  .slide:last-child { page-break-after: auto; break-after: auto; }
+  .kicker { font: 500 22px var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--warm); margin-bottom: 18px; }
+  h1 { font: 300 128px/1.0 var(--serif); letter-spacing: -0.02em; }
+  h2 { font: 400 70px/1.08 var(--serif); letter-spacing: -0.015em; margin-bottom: 36px; max-width: 1600px; }
+  h3 { font: 500 34px/1.2 var(--serif); margin: 0 0 10px; }
+  p { margin: 0; }
+  .lede { font-size: 34px; color: var(--ink-2); max-width: 1500px; }
+  .mute { color: var(--mute); }
+  em { font-style: italic; color: var(--ink); }
+  .foot { position: absolute; left: 110px; right: 110px; bottom: 40px; display: flex; justify-content: space-between;
+    font: 18px var(--sans); color: var(--mute); }
+  code, .code { font-family: var(--mono); }
+  .card { background: #10131e; border: 1px solid var(--line); border-radius: 18px; }
+  .shot { display: block; border: 1px solid rgba(255,255,255,.12); border-radius: 12px; }
+  .crop { position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,.12); border-radius: 12px; }
+  .crop img { position: absolute; display: block; }
+  .hl { color: var(--warm); }
+  .blue { color: var(--accent); }
+  .green { color: var(--bot); }
+  .red { color: var(--revert); }
+  /* language colours, matching the Kielipeili demo */
+  .l-fi { --c: #3b82f6; } .l-sv { --c: #eab308; } .l-en { --c: #ef4444; }
+  .l-de { --c: #14b8a6; } .l-ru { --c: #ec4899; } .l-uk { --c: #a855f7; }
+
+  /* 1 title */
+  .s-title { padding: 0; }
+  .s-title .bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .55; }
+  .s-title .veil { position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(7,8,13,.97) 0%, rgba(7,8,13,.88) 46%, rgba(7,8,13,.25) 100%); }
+  .s-title .inner { position: absolute; left: 110px; top: 220px; width: 1500px; }
+  .s-title .promise { font: 300 52px/1.2 var(--serif); color: var(--ink); margin-top: 44px; }
+  .s-title .meta { margin-top: 56px; font-size: 26px; color: var(--mute); line-height: 1.6; }
+  .s-title .meta b { color: var(--ink-2); font-weight: 500; }
+
+  /* 2 problem */
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 50px; }
+  .two .card { padding: 38px 44px; }
+  .two .who { font: 500 22px var(--sans); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 14px; }
+  .two .q { font: 400 40px/1.25 var(--serif); margin-bottom: 18px; }
+  .two p.d { font-size: 26px; color: var(--ink-2); }
+
+  /* 3 kielipeili scores */
+  .kp { display: grid; grid-template-columns: 700px 1fr; gap: 60px; align-items: start; }
+  .scores { padding: 26px 32px 22px; }
+  .scores .row { display: grid; grid-template-columns: 190px 1fr 92px 96px; align-items: center; gap: 16px; height: 66px; }
+  .scores .hdr { height: 34px; font: 16px var(--sans); color: var(--mute); text-transform: uppercase; letter-spacing: .08em; }
+  .scores .lang { font-size: 26px; color: var(--ink); white-space: nowrap; }
+  .scores .lang::before { content: ""; display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: var(--c); margin-right: 12px; vertical-align: 3px; }
+  .scores .track { height: 22px; background: rgba(255,255,255,.05); border-radius: 5px; position: relative; }
+  .scores .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; background: var(--c); }
+  .scores .val { font: 300 46px/1 var(--serif); text-align: right; }
+  .scores .agr { font: 500 22px var(--sans); color: var(--ink-2); text-align: right; }
+  .scores .row.ref .val { color: var(--mute); }
+  .scores .row.hot { background: rgba(236,72,153,.08); border-radius: 10px; margin: 0 -14px; padding: 0 14px; }
+  .scores .note { font-size: 19px; color: var(--mute); margin-top: 14px; line-height: 1.4; }
+  .dims { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-top: 26px; }
+  .dims div { font-size: 22px; color: var(--ink-2); line-height: 1.38; }
+  .dims b { display: block; font: 500 27px var(--serif); color: var(--ink); margin-bottom: 4px; }
+  .kp .shotcap { font-size: 19px; color: var(--mute); margin-top: 12px; }
+
+  /* 4 finnish vs russian */
+  .fr { display: grid; grid-template-columns: 560px 1fr; gap: 56px; }
+  .kinds .grp { padding: 22px 28px; margin-bottom: 18px; }
+  .kinds .gh { font: 600 18px var(--sans); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
+  .kinds .gl { display: flex; align-items: baseline; gap: 18px; font-size: 25px; color: var(--ink-2); }
+  .kinds .gl b { font: 300 64px/1 var(--serif); color: var(--ink); min-width: 70px; }
+  .kinds .gd { font-size: 20px; color: var(--mute); margin-top: 6px; line-height: 1.35; }
+  .diff { padding: 28px 34px; }
+  .diff .tag { display: inline-block; font: 600 17px var(--sans); letter-spacing: .1em; text-transform: uppercase;
+    color: #ffb3bd; background: rgba(255,84,104,.16); border-radius: 6px; padding: 3px 10px; margin-right: 12px; vertical-align: 3px; }
+  .diff .what { font-size: 25px; color: var(--ink); line-height: 1.38; }
+  .diff .sides { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 22px; }
+  .diff .side { border-left: 3px solid var(--c); padding-left: 20px; }
+  .diff .side .lab { font: 600 16px var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--mute); margin-bottom: 6px; }
+  .diff .side .orig { font: 400 25px/1.32 var(--serif); color: var(--ink); }
+  .diff .side .tr { font-size: 19px; color: var(--mute); margin-top: 6px; line-height: 1.35; }
+  .diff .ok { font-size: 19px; color: var(--bot); margin-top: 18px; }
+  .summary { margin-top: 26px; padding: 0 6px; }
+  .summary .lab { font: 600 16px var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--mute); margin-bottom: 8px; }
+  .summary p { font: 300 27px/1.38 var(--serif); color: var(--ink-2); }
+
+  /* 5 sql */
+  .sql { font: 26px/1.5 var(--mono); font-variant-ligatures: none; padding: 30px 46px; margin-top: 26px; white-space: pre; color: var(--ink-2); }
+  .sql .k { color: var(--accent); }
+  .sql .t { color: var(--warm); }
+  .sql .f { color: var(--bot); }
+  .sql .c { color: var(--mute); }
+  .sqlrow { display: grid; grid-template-columns: 470px 1fr; gap: 50px; margin-top: 30px; align-items: start; }
+  .sqlrow .shotcap { font-size: 18px; color: var(--mute); margin-top: 10px; line-height: 1.35; }
+  .notes3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; font-size: 22px; color: var(--ink-2); line-height: 1.38; }
+  .notes3 b { display: block; font: 500 27px var(--serif); color: var(--ink); margin-bottom: 6px; }
+
+  /* 6 ask */
+  .ask { display: grid; grid-template-columns: 760px 1fr; gap: 56px; }
+  .ask h2 { font-size: 58px; margin-bottom: 14px; }
+  .brief { font: 300 26px/1.3 var(--serif); color: var(--ink-2); margin-bottom: 14px; }
+  .brief span { font: 18px var(--sans); color: var(--mute); }
+  .askq { font: 400 32px var(--serif); color: var(--ink); margin: 6px 0 20px; }
+  .askq span { font: 21px var(--sans); color: var(--mute); display: block; margin-top: 4px; }
+  .then { padding: 22px 30px; margin-bottom: 18px; }
+  .then .when { font: 600 20px var(--sans); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
+  .then p { font-size: 24px; line-height: 1.36; color: var(--ink-2); }
+  .then .src { font: 18px var(--mono); color: var(--mute); margin-top: 10px; }
+  .askfoot { font-size: 21px; color: var(--mute); margin-top: 6px; line-height: 1.38; }
+
+  /* 7 architecture */
+  .arch { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 0; }
+  .tbl { padding: 28px 32px; }
+  .tbl .name { font: 27px var(--mono); color: var(--warm); display: block; }
+  .tbl .tag { display: inline-block; font: 600 15px var(--sans); letter-spacing: .08em; text-transform: uppercase;
+    color: #07080d; background: var(--warm); border-radius: 6px; padding: 3px 9px; margin-top: 10px; }
+  .tbl .big { font: 300 54px/1.05 var(--serif); margin: 14px 0 6px; }
+  .tbl .sub { font-size: 21px; color: var(--mute); line-height: 1.35; }
+  .tbl ul { margin: 12px 0 0; padding-left: 24px; font-size: 21px; color: var(--ink-2); line-height: 1.35; }
+  .tbl li { margin: 5px 0; }
+  .flows { margin-top: 36px; display: grid; grid-template-columns: 170px 1fr; gap: 16px 20px; align-items: stretch; }
+  .flows .fl { font: 600 18px var(--sans); letter-spacing: .1em; text-transform: uppercase; display: flex; align-items: center; }
+  .flow { display: flex; align-items: stretch; }
+  .flow .step { flex: 1; padding: 14px 18px; font-size: 20px; color: var(--ink-2); line-height: 1.28; }
+  .flow .step b { display: block; color: var(--ink); font: 500 22px var(--serif); margin-bottom: 2px; }
+  .flow .arrow { width: 34px; display: flex; align-items: center; justify-content: center; color: var(--mute); font-size: 26px; }
+
+  /* 8 mariadb */
+  .md { display: grid; grid-template-columns: 900px 1fr; gap: 60px; }
+  .bars { padding: 30px 36px; }
+  .bars .row { display: grid; grid-template-columns: 210px 1fr 90px 190px; align-items: center; gap: 16px; height: 62px; font-size: 23px; }
+  .bars .lab { font: 21px var(--mono); color: var(--ink-2); }
+  .bars .track { height: 26px; background: rgba(255,255,255,.05); border-radius: 5px; position: relative; }
+  .bars .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; background: var(--accent); opacity: .85; }
+  .bars .row.exact .fill { background: var(--bot); }
+  .bars .val { font: 500 26px var(--sans); text-align: right; }
+  .bars .lat { font: 19px var(--mono); color: var(--mute); text-align: right; }
+  .bars .hdr { height: 40px; font: 17px var(--sans); color: var(--mute); text-transform: uppercase; letter-spacing: .08em; }
+  .md .side h3 { font-size: 32px; }
+  .md .side p { font-size: 24px; color: var(--ink-2); margin-bottom: 26px; }
+  .dup { font: 21px/1.5 var(--mono); padding: 20px 24px; margin-bottom: 26px; color: var(--ink-2); }
+  .dup .bad { color: var(--revert); font-weight: 600; }
+  .md .side code, .crit .w code { white-space: nowrap; }
+
+  /* 9 grid */
+  .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 26px 26px; }
+  .tile img { width: 100%; aspect-ratio: 16/8.2; object-position: top; object-fit: cover; display: block; border-radius: 9px; border: 1px solid rgba(255,255,255,.12); }
+  .tile .t { font: 500 23px var(--serif); margin: 10px 0 2px; color: var(--ink); }
+  .tile .f { font-size: 18.5px; line-height: 1.3; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tile .who { font: 600 13px var(--sans); letter-spacing: .1em; text-transform: uppercase; margin-left: 8px; vertical-align: 2px; }
+  .r { color: var(--accent); } .e { color: var(--warm); }
+
+  /* 10 scale */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 46px 60px; margin-top: 20px; }
+  .stat b { display: block; font: 300 96px/1 var(--serif); letter-spacing: -0.02em; }
+  .stat span { display: block; font-size: 25px; color: var(--ink-2); margin-top: 10px; line-height: 1.3; }
+  .stack { margin-top: 60px; font-size: 24px; color: var(--mute); border-top: 1px solid var(--line); padding-top: 26px; }
+  .stack b { color: var(--ink-2); font-weight: 500; }
+
+  /* 11 criteria */
+  .crit { display: grid; grid-template-columns: 440px 1fr; border-top: 1px solid var(--line); }
+  .crit > div { padding: 18px 0; border-bottom: 1px solid var(--line); }
+  .crit .c { font: 400 34px/1.15 var(--serif); padding-right: 30px; }
+  .crit .c small { display: block; font: 18px var(--sans); color: var(--mute); margin-top: 4px; }
+  .crit .w { font-size: 23px; color: var(--ink-2); line-height: 1.38; }
+  .bonus { margin-top: 24px; font-size: 25px; color: var(--ink-2); }
+
+  /* 12 team */
+  .team { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; margin-top: 30px; }
+  .person { padding: 30px; min-height: 230px; }
+  .person .ph { width: 92px; height: 92px; border-radius: 50%; border: 2px dashed var(--mute); margin-bottom: 20px; }
+  .person .n { font: 400 32px var(--serif); color: var(--warm); }
+  .person .ro { font-size: 22px; color: var(--mute); margin-top: 6px; }
+  .links { margin-top: 56px; display: grid; grid-template-columns: 220px 1fr; gap: 16px 30px; font-size: 27px; }
+  .links .k { color: var(--mute); }
+  .links .v { font-family: var(--mono); font-size: 25px; color: var(--accent); }
+  .todo { color: var(--warm); font-family: var(--sans); font-size: 22px; }
+  .credit { position: absolute; left: 110px; right: 110px; bottom: 80px; font-size: 20px; color: var(--mute); }
+</style>
+</head>
+<body>
+
+<!-- 1 · Title -->
+<section class="slide s-title">
+  <img class="bg" src="../media/03-galaxy-2007-jokela.jpg" alt="">
+  <div class="veil"></div>
+  <div class="inner">
+    <div class="kicker">Junction 2026 · MariaDB challenge</div>
+    <h1>Wikipedia<br>Through Time</h1>
+    <p class="promise">Is every Wikipedia telling the same story — and was it always?</p>
+    <p class="meta"><b>Kielipeili:</b> six Wikipedias scored against the Finnish article, every difference quoted<br>
+      <b>Ask:</b> what Wikipedia said in any year, cited to the exact version<br>
+      <b>Both tracks:</b> RAG + system-versioned tables · 862,076 versions · 23 years</p>
+  </div>
+  <div class="foot"><span>Knowledge Galaxy, late 2007: 11,285 articles placed by meaning</span><span>1</span></div>
+</section>
+
+<!-- 2 · Problem -->
+<section class="slide">
+  <div class="kicker">The problem</div>
+  <h2>The same history is told differently in every language — and nobody can see how it changed.</h2>
+  <p class="lede">Russian readers may not know Mannerheim; English readers need winter explained. That is a fair
+    reason to tell a story differently. Telling the same events with a different slant is not. Today you cannot see either.</p>
+  <div class="two">
+    <div class="card">
+      <div class="who blue">Across languages</div>
+      <p class="q">“If the Finnish Winter War article is the reference: Swedish 85, English 70, Russian 13.”</p>
+      <p class="d">What the challenge host asked us for (his illustration, translated): a score per language, with AI judging where the same thing is told differently.</p>
+    </div>
+    <div class="card">
+      <div class="who hl">Across time</div>
+      <p class="q">“What did Wikipedia say about this in 2015, and what has changed since?”</p>
+      <p class="d">The challenge brief's own example. Wikipedia keeps every version, but the history tab is a list of diffs: you cannot search it or cite it.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Wikipedia Through Time</span><span>2</span></div>
+</section>
+
+<!-- 3 · Kielipeili: the score -->
+<section class="slide">
+  <div class="kicker">Kielipeili · one story, six Wikipedias</div>
+  <h2 style="font-size:62px; margin-bottom:30px">How much of the Finnish story does each Wikipedia tell?</h2>
+  <div class="kp">
+    <div>
+      <div class="scores card">
+        <div class="row hdr"><span>Finnish Civil War</span><span>coverage %</span><span></span><span style="text-align:right">agree</span></div>
+        <div class="row ref l-fi"><span class="lang">Suomi</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="val">100</span><span class="agr mute">ref.</span></div>
+        <div class="row l-sv"><span class="lang">Svenska</span><span class="track"><span class="fill" style="width:28%"></span></span><span class="val">28</span><span class="agr">72</span></div>
+        <div class="row l-en"><span class="lang">English</span><span class="track"><span class="fill" style="width:72%"></span></span><span class="val">72</span><span class="agr">78</span></div>
+        <div class="row l-de"><span class="lang">Deutsch</span><span class="track"><span class="fill" style="width:57%"></span></span><span class="val">57</span><span class="agr">78</span></div>
+        <div class="row hot l-ru"><span class="lang">Русский</span><span class="track"><span class="fill" style="width:34%"></span></span><span class="val">34</span><span class="agr">72</span></div>
+        <div class="row l-uk"><span class="lang">Українська</span><span class="track"><span class="fill" style="width:35%"></span></span><span class="val">35</span><span class="agr">70</span></div>
+        <p class="note">Reference: <i>Suomen sisällissota</i>, 115k characters = 100. Current versions.</p>
+      </div>
+      <div class="dims">
+        <div><b>Coverage · vectors</b>Share of the Finnish text whose best-matching paragraph in that language has bge-m3 cosine ≥ 0.60, computed in MariaDB.</div>
+        <div><b>Agreement · Claude</b>Is the shared part told the same way? Claude reviews each language pair; every quote is checked against the stored text.</div>
+      </div>
+    </div>
+    <div>
+      <div class="crop" style="height:591px">
+        <img src="../media/kielipeili-overview.jpg" alt="Kielipeili overview for the Finnish Civil War" style="width:100%; left:0; top:0">
+      </div>
+      <p class="shotcap">Kielipeili demo: 9 Finnish-history stories in fi · sv · en · de · ru · uk, current versions plus snapshots from 2008, 2012, 2016, 2020 and 2024.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Numbers from the Kielipeili demo · the host's two dimensions: coverage, and the same thing told differently</span><span>3</span></div>
+</section>
+
+<!-- 4 · Kielipeili: Finnish vs Russian -->
+<section class="slide">
+  <div class="kicker">Kielipeili · Finnish vs Russian · Finnish Civil War</div>
+  <h2 style="font-size:60px; margin-bottom:30px">18 differences, each quoted and checked — audience kept apart from framing and fact</h2>
+  <div class="fr">
+    <div class="kinds">
+      <div class="grp card">
+        <div class="gh green">Legitimate · different audience</div>
+        <div class="gl"><b>1</b>Audience</div>
+      </div>
+      <div class="grp card">
+        <div class="gh hl">Editorial choices · worth a look</div>
+        <div class="gl"><b>5</b>Emphasis <b style="margin-left:24px">2</b>Omission</div>
+      </div>
+      <div class="grp card">
+        <div class="gh red">Conflicts · check these first</div>
+        <div class="gl"><b>8</b>Fact <b style="margin-left:24px">2</b>Loaded</div>
+        <div class="gd">Not explained by a different audience. Some are mistranslations or number slips, so both quotes are shown to check.</div>
+      </div>
+    </div>
+    <div>
+      <div class="diff card">
+        <p class="what"><span class="tag">Fact</span>Finnish lists France among the first states to recognise Finland; Russian says France refused.</p>
+        <div class="sides">
+          <div class="side l-fi"><div class="lab">Finnish article</div>
+            <div class="orig">“jo 4. tammikuuta 1918 tunnustaneet Venäjä, Ranska, Ruotsi ja Saksa”</div>
+            <div class="tr">already recognised on 4 January 1918 by Russia, France, Sweden and Germany</div></div>
+          <div class="side l-ru"><div class="lab">Russian article</div>
+            <div class="orig">“Великобритания, Франция и Соединённые Штаты Америки не согласились признать независимость”</div>
+            <div class="tr">Great Britain, France and the United States did not agree to recognise independence</div></div>
+        </div>
+        <p class="ok">✓ 18/18 differences verified: every quote found word for word in the stored article text</p>
+      </div>
+      <div class="summary">
+        <div class="lab">Claude's summary of the pair</div>
+        <p>“The Russian article closely follows the Finnish one on terror, prison camps and courts, often with the same figures, but it leaves out almost all of the long-term social and political causes of the war. It puts more weight on outside actors (Stalin and Lenin pushing for revolution, Germany, Britain, Sweden, peace mediators), calls the Red rising a coup and calls the Vaasa senate the ‘legitimate power’, and it contains several mistranslations and number differences.”</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>From the Kielipeili demo · labels by Claude: fact, loaded, omission, emphasis, audience · grouping ours</span><span>4</span></div>
+</section>
+
+<!-- 5 · The SQL -->
+<section class="slide">
+  <div class="kicker">How it works · MariaDB</div>
+  <h2 style="font-size:58px; margin-bottom:0">Every paragraph is a vector in a system-versioned table, so coverage in any year is one statement</h2>
+  <div class="sql card"><span class="k">SELECT</span> ROUND(100 * SUM(IF(sim >= 0.60, chars, 0)) / SUM(chars)) <span class="k">AS</span> coverage
+<span class="k">FROM</span> (<span class="k">SELECT</span> a.chars, 1 - (<span class="k">SELECT</span> MIN(<span class="f">VEC_DISTANCE_COSINE</span>(a.emb, b.emb))
+        <span class="k">FROM</span> <span class="t">lens_chunk</span> <span class="k">FOR SYSTEM_TIME AS OF</span> <span class="hl">'2016-01-01'</span> <span class="k">AS</span> b   <span class="c">-- Russian, as it stood</span>
+        <span class="k">WHERE</span> b.topic = a.topic <span class="k">AND</span> b.lang = 'ru') <span class="k">AS</span> sim
+      <span class="k">FROM</span> <span class="t">lens_chunk</span> <span class="k">FOR SYSTEM_TIME AS OF</span> <span class="hl">'2016-01-01'</span> <span class="k">AS</span> a     <span class="c">-- Finnish, same day</span>
+      <span class="k">WHERE</span> a.topic = @topic <span class="k">AND</span> a.lang = 'fi') s;</div>
+  <div class="sqlrow">
+    <div>
+      <div class="crop" style="height:306px; width:470px"><img src="../media/kielipeili-timeline.jpg" alt="Coverage over time, Finnish Civil War" style="width:470px; left:0; top:0"></div>
+      <p class="shotcap">The same statement AS OF 1 January 2008, 2012, 2016, 2020, 2024 and now: Finnish Civil War, Russian in pink.</p>
+    </div>
+    <div class="notes3">
+      <div><b>Paragraph vectors</b><code>lens_chunk</code>: every paragraph of every language version, bge-m3 <code>VECTOR(1024)</code> with a <code>VECTOR INDEX</code>.</div>
+      <div><b>Real save times</b><code>SYSTEM VERSIONED</code>, with each version stored at the moment it was saved on Wikipedia, so <code>AS OF</code> is “what readers saw that day”.</div>
+      <div><b>Alignment</b>Paragraph pairs are mutual nearest neighbours (cosine ≥ 0.55); coverage counts Finnish text whose best match is ≥ 0.60.</div>
+    </div>
+  </div>
+  <div class="foot"><span>app/kielipeili.py: SCORE_SQL, shortened, with its parameters filled in</span><span>5</span></div>
+</section>
+
+<!-- 6 · Ask -->
+<section class="slide">
+  <div class="ask">
+    <div>
+      <div class="kicker">Ask Wikipedia — in any year</div>
+      <h2>Then vs now, cited to the exact version</h2>
+      <p class="brief">“What did Wikipedia say about this in 2015, and what has changed since?” <span>— the challenge brief</span></p>
+      <p class="askq">“Suomen suhde Natoon” <span>Finland and NATO · as of 1 January 2015 · “…and what changed since”</span></p>
+      <div class="then card">
+        <div class="when hl">As of 1 January 2015</div>
+        <p>Finland is a NATO <em>partner</em> that has not applied for membership; public support was 26% (August 2014).</p>
+        <div class="src">cites: Suomen Nato-keskustelu · version of 2014-12-01</div>
+      </div>
+      <div class="then card">
+        <div class="when green">Today</div>
+        <p>Parliament backed membership 188–8 (17 May 2022), support reached 79% (June 2022), and Finland joined on 4 April 2023.</p>
+        <div class="src">cites: Suomen Nato-jäsenyys (2025-01-07) · Suomen Nato-keskustelu (2026-04-07)</div>
+      </div>
+      <p class="askfoot"><code>FOR SYSTEM_TIME AS OF</code> + vector search over 170,300 yearly article vectors. Claude Opus 5.5 answers only from those texts (Citations API). Warm answer 9–11 s, streamed.</p>
+    </div>
+    <div class="crop" style="height:790px; margin-top:40px">
+      <img src="../media/02b-ask-nato-2015-compare-full.jpg" alt="Ask Wikipedia answer for Finland and NATO, 2015 vs now"
+        style="width:1414px; left:-262px; top:-396px">
+    </div>
+  </div>
+  <div class="foot"><span>Live answer: 14 cited sources, 2012–2014 versions for 2015, 2023–2026 versions for today</span><span>6</span></div>
+</section>
+
+<!-- 7 · Architecture -->
+<section class="slide">
+  <div class="kicker">Architecture</div>
+  <h2 style="font-size:60px; margin-bottom:30px">Three system-versioned tables with real edit times</h2>
+  <div class="arch">
+    <div class="tbl card">
+      <span class="name">article</span><span class="tag">system-versioned</span>
+      <div class="big">862,076 versions</div>
+      <div class="sub">full wikitext of 19,742 Finnish articles, Feb 2003 – 1 Oct 2026</div>
+      <ul>
+        <li><code>system_versioning_insert_history</code>: <code>row_start</code> = real save time</li>
+        <li><code>AS OF</code> = the article as a reader saw it that day</li>
+        <li>Ask's sources, strata, typewriter, time grep</li>
+      </ul>
+    </div>
+    <div class="tbl card">
+      <span class="name">article_vector_history</span><span class="tag">system-versioned</span>
+      <div class="big">170,300 vectors</div>
+      <div class="sub">bge-m3, one per article per 1 January 2004–2026 + latest</div>
+      <ul>
+        <li><code>AS OF</code> + <code>VEC_DISTANCE_COSINE</code> = semantic search back then</li>
+        <li>plus 29,460 current fi · sv · en vectors with a <code>VECTOR INDEX</code></li>
+      </ul>
+    </div>
+    <div class="tbl card">
+      <span class="name">lens_chunk</span><span class="tag">system-versioned</span>
+      <div class="big">6 languages</div>
+      <div class="sub">every paragraph of 9 stories in fi · sv · en · de · ru · uk: now + 2008, 2012, 2016, 2020, 2024</div>
+      <ul>
+        <li>bge-m3 <code>VECTOR(1024)</code> + <code>VECTOR INDEX</code></li>
+        <li><code>AS OF</code> T: nearest paragraph per language → coverage</li>
+      </ul>
+    </div>
+  </div>
+  <div class="flows">
+    <div class="fl hl">Kielipeili</div>
+    <div class="flow">
+      <div class="step card"><b>Finnish paragraphs</b>AS OF T</div>
+      <div class="arrow">→</div>
+      <div class="step card"><b>Nearest in each language</b>AS OF T, by vector</div>
+      <div class="arrow">→</div>
+      <div class="step card"><b>Coverage score</b>matched text ≥ 0.60</div>
+      <div class="arrow">→</div>
+      <div class="step card"><b>Claude per pair</b>fact · framing labels</div>
+      <div class="arrow">→</div>
+      <div class="step card"><b>Every quote</b>checked word for word</div>
+    </div>
+    <div class="fl blue">Ask</div>
+    <div class="flow">
+      <div class="step card"><b>Question</b>fi · sv · en → bge-m3</div>
+      <div class="arrow">→</div>
+      <div class="step card"><b>AS OF + vectors</b>exact search, ~115 ms</div>
+      <div class="arrow">→</div>
+      <div class="step card"><b>Texts AS OF</b>from <code>article</code></div>
+      <div class="arrow">→</div>
+      <div class="step card"><b>Claude + Citations</b>answers only from them</div>
+      <div class="arrow">→</div>
+      <div class="step card"><b>Every claim</b>links to <code>?oldid=</code></div>
+    </div>
+  </div>
+  <div class="foot"><span>Data: MariaDB Foundation's Finnish Wikipedia datasets (History of Finland); Kielipeili's six language versions fetched from Wikipedia</span><span>7</span></div>
+</section>
+
+<!-- 8 · MariaDB finding -->
+<section class="slide">
+  <div class="kicker">What we found about MariaDB</div>
+  <h2>A VECTOR INDEX works on a system-versioned table — but its recall drops under AS OF</h2>
+  <div class="md">
+    <div class="bars card">
+      <div class="row hdr"><span>search</span><span>recall@10 vs exact</span><span></span><span style="text-align:right">median / max</span></div>
+      <div class="row"><span class="lab">HNSW ef 20</span><span class="track"><span class="fill" style="width:47%"></span></span><span class="val">0.47</span><span class="lat">105 / 5634 ms</span></div>
+      <div class="row"><span class="lab">HNSW ef 100</span><span class="track"><span class="fill" style="width:74%"></span></span><span class="val">0.74</span><span class="lat">111 / 1363 ms</span></div>
+      <div class="row"><span class="lab">HNSW ef 400</span><span class="track"><span class="fill" style="width:84%"></span></span><span class="val">0.84</span><span class="lat">126 / 1038 ms</span></div>
+      <div class="row"><span class="lab">HNSW ef 1000</span><span class="track"><span class="fill" style="width:91%"></span></span><span class="val">0.91</span><span class="lat">188 / 2027 ms</span></div>
+      <div class="row"><span class="lab">HNSW ef 4000</span><span class="track"><span class="fill" style="width:98%"></span></span><span class="val">0.98</span><span class="lat">411 / 4659 ms</span></div>
+      <div class="row exact"><span class="lab">exact search</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="val">1.00</span><span class="lat">215 / 247 ms</span></div>
+      <p class="mute" style="font-size:19px; margin-top:16px">5 questions × 5 dates 2006–2026, k = 10, mhnsw_ef_search varied. Latency measured from the laptop, incl. ~100 ms network; exact search alone is ~115 ms on the server.</p>
+    </div>
+    <div class="side">
+      <h3>Why</h3>
+      <p>One HNSW graph spans every version of every year; at any date only 1–12% of rows are valid (2,193 in 2006, 19,742 today), so the <code>AS OF</code> filter throws most candidates away.</p>
+      <h3>Duplicate rows at default settings</h3>
+      <div class="dup card">LIMIT 6 → 128998, 1065040,<br><span class="bad">1256, 1256, 8617, 8617</span></div>
+      <h3>Our choice · our suggestion</h3>
+      <p style="margin-bottom:0">Time-travel search uses exact search (<code>IGNORE INDEX</code>): 100% correct. A period-aware vector index, or one graph per <code>PARTITION BY SYSTEM_TIME</code> partition (not supported yet, MDEV-35315), would make it scale. Repro: <code>docs/mariadb-vector-svt-duplicates.md</code>.</p>
+    </div>
+  </div>
+  <div class="foot"><span>MariaDB 12.3.3 · article_vector_history, 170,300 rows, VECTOR INDEX M=16 cosine</span><span>8</span></div>
+</section>
+
+<!-- 9 · 14 more lenses -->
+<section class="slide">
+  <div class="kicker">Supporting evidence · 14 more tools on one hub · for <span class="r">readers</span> and <span class="e">editors</span></div>
+  <h2 style="font-size:58px; margin-bottom:26px">Fourteen more lenses on 23 years of edits, one finding each</h2>
+  <div class="grid">
+    <div class="tile"><img src="../media/02-ask-nato-2015-compare.jpg" alt=""><div class="t">Time Machine Search<span class="who r">R</span></div><div class="f">Ask any year: NATO 2015 vs today</div></div>
+    <div class="tile"><img src="../media/12-three-wikipedias.jpg" alt=""><div class="t">Three Wikipedias<span class="who r">R</span></div><div class="f">62% of topics exist only in Finnish</div></div>
+    <div class="tile"><img src="../media/03-galaxy-2007-jokela.jpg" alt=""><div class="t">Knowledge Galaxy 3D<span class="who r">R</span></div><div class="f">2007's brightest flare: Jokela</div></div>
+    <div class="tile"><img src="../media/06-strata-talvisota.jpg" alt=""><div class="t">Knowledge Strata<span class="who e">E</span></div><div class="f">26% of Talvisota written in 2006</div></div>
+    <div class="tile"><img src="../media/07-typewriter-talvisota.jpg" alt=""><div class="t">Typewriter<span class="who e">E</span></div><div class="f">Talvisota: 214 edits changed the lead</div></div>
+    <div class="tile"><img src="../media/16-timegrep-105-paivaa.jpg" alt=""><div class="t">Time Grep<span class="who e">E</span></div><div class="f">“105 päivää”: first written 6 Dec 2009</div></div>
+    <div class="tile"><img src="../media/08-editwars.jpg" alt=""><div class="t">Edit Wars<span class="who e">E</span></div><div class="f">45,626 reverts, only 1,305 true wars</div></div>
+    <div class="tile"><img src="../media/09-immune.jpg" alt=""><div class="t">Immune System<span class="who e">E</span></div><div class="f">Half of reverted edits gone in 14 min</div></div>
+    <div class="tile"><img src="../media/10-authors.jpg" alt=""><div class="t">The Authors<span class="who e">E</span></div><div class="f">Anonymous edits 31% (2004) → 12%</div></div>
+    <div class="tile"><img src="../media/11-heartbeat.jpg" alt=""><div class="t">Heartbeat<span class="who e">E</span></div><div class="f">13 Nov 2024: 1,974 of 2,033 by a bot</div></div>
+    <div class="tile"><img src="../media/13-growing-tree.jpg" alt=""><div class="t">Growing Tree<span class="who r">R</span></div><div class="f">59 KB in 2003 → 134 MB today</div></div>
+    <div class="tile"><img src="../media/14-biggest-stories-2021.jpg" alt=""><div class="t">Biggest Stories<span class="who r">R</span></div><div class="f">Civil War #1 for 15 yr 7 mo</div></div>
+    <div class="tile"><img src="../media/15-linkweb.jpg" alt=""><div class="t">Link Web 3D<span class="who r">R</span></div><div class="f">2,387 links (2006) → 86,280 today</div></div>
+    <div class="tile"><img src="../media/05-seismograph.jpg" alt=""><div class="t">Seismograph<span class="who r">R</span></div><div class="f">Jokela, Nov 2007: 826 edits/month</div></div>
+    <div class="tile"><img src="../media/01-hub.jpg" alt=""><div class="t">The hub</div><div class="f">Every tool one click away</div></div>
+  </div>
+  <div class="foot"><span>Real screenshots of the running app</span><span>9</span></div>
+</section>
+
+<!-- 10 · Scale & tech -->
+<section class="slide">
+  <div class="kicker">Scale & tech</div>
+  <h2>Full history, six languages, real edit times</h2>
+  <div class="stats">
+    <div class="stat"><b>862,076</b><span>versions of 19,742 Finnish articles with full wikitext, Feb 2003 – Oct 2026</span></div>
+    <div class="stat"><b>170,300</b><span>time-stamped bge-m3 article vectors, system-versioned</span></div>
+    <div class="stat"><b>6 languages</b><span>9 stories compared paragraph by paragraph in Finnish, Swedish, English, German, Russian and Ukrainian, 2008 → now</span></div>
+    <div class="stat"><b>~115 ms</b><span>exact time-travel vector search over all 170k vectors, on an HDD datadir</span></div>
+    <div class="stat"><b>14 min</b><span>to embed them on one RTX 5090 (our bge-m3 reproduces the dataset's vectors: mean cosine 1.0000)</span></div>
+    <div class="stat"><b>9–11 s</b><span>warm, streamed Ask answer with citations to exact versions</span></div>
+  </div>
+  <p class="stack"><b>Stack:</b> MariaDB 12.3.3 (system-versioned tables, VECTOR, VEC_DISTANCE_COSINE, window functions, REGEXP_*, FULLTEXT) ·
+    Python / Flask + gunicorn · d3 · three.js · bge-m3 (sentence-transformers) · Claude Opus 5.5 + Citations API · Claude pair reviews for Kielipeili</p>
+  <div class="foot"><span>Wikipedia Through Time</span><span>10</span></div>
+</section>
+
+<!-- 11 · Criteria -->
+<section class="slide">
+  <div class="kicker">Judging criteria</div>
+  <h2 style="margin-bottom:24px">How it maps</h2>
+  <div class="crit">
+    <div class="c">Use of MariaDB<small>effective & creative · 20%</small></div>
+    <div class="w">Three system-versioned tables with real edit times; vectors <em>inside</em> them, so per-language coverage <code>AS OF</code> any year and semantic search of the past are each one statement; window functions find reverts and edit wars.</div>
+    <div class="c">Implementation & scalability<small>20%</small></div>
+    <div class="w">Full history: 862k versions, 170k time-stamped vectors, six-language paragraph alignment. We measured the index vs exact trade-off (recall 0.47 → 1.00) and wrote up a repro for MariaDB.</div>
+    <div class="c">Usefulness<small>readers & editors · 20%</small></div>
+    <div class="w">Readers see how each Wikipedia tells a story and can ask what was known in any year, with sources. Editors get quoted fact conflicts between languages, plus reverts, edit wars and vandalism lifetimes.</div>
+    <div class="c">Design & demo<small>20%</small></div>
+    <div class="w">Kielipeili: one score per language and every difference side by side. Fourteen more interactive tools on one hub, from a 3D galaxy replay to streamed, cited answers.</div>
+    <div class="c">Originality<small>20%</small></div>
+    <div class="w">Audience differences kept apart from conflicting facts and framing, as the host framed it, and tracked over time with <code>AS OF</code>; semantic search over Wikipedia's <em>past</em>.</div>
+  </div>
+  <p class="bonus"><span class="hl">Bonus:</span> both tracks — RAG and system-versioned tables — in the same features.</p>
+  <div class="foot"><span>Wikipedia Through Time</span><span>11</span></div>
+</section>
+
+<!-- 12 · Team -->
+<section class="slide">
+  <div class="kicker">Team</div>
+  <h2>Wikipedia Through Time</h2>
+  <div class="team">
+    <div class="person card"><div class="ph"></div><div class="n">[Name 1]</div><div class="ro">[role] · [Discord]</div></div>
+    <div class="person card"><div class="ph"></div><div class="n">[Name 2]</div><div class="ro">[role] · [Discord]</div></div>
+    <div class="person card"><div class="ph"></div><div class="n">[Name 3]</div><div class="ro">[role] · [Discord]</div></div>
+    <div class="person card"><div class="ph"></div><div class="n">[Name 4]</div><div class="ro">[role] · [Discord]</div></div>
+  </div>
+  <div class="links">
+    <span class="k">Demo</span><span class="v">[demo URL — to confirm]</span>
+    <span class="k">Code</span><span class="v">github.com/henrikkvamme/junction-2026/tree/main/wikipediathroughtime <span class="todo">(make public before judging)</span></span>
+    <span class="k">MariaDB repro</span><span class="v">docs/mariadb-vector-svt-duplicates.md</span>
+    <span class="k">Contact</span><span class="v">[phone] · [Discord]</span>
+  </div>
+  <p class="credit">Text: Wikipedia contributors, CC BY-SA 4.0. Data: MariaDB Foundation's Wikipedia datasets; other language versions from Wikipedia.</p>
+  <div class="foot"><span>Junction 2026 · MariaDB challenge</span><span>12</span></div>
+</section>
+
+</body>
+</html>

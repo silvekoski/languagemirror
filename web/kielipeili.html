@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script type="importmap">{"imports": {"three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="demo-title" content="Language Mirror (Kielipeili): one story, many Wikipedias">
+<meta name="demo-desc" content="How do the Finnish, Swedish, English, German, Russian and Ukrainian Wikipedias tell the same history? Paragraph-level bge-m3 vectors in a system-versioned table score each language against the Finnish article, at any moment since 2008. Claude flags conflicting facts and framing, quoting both sides.">
+<meta name="demo-tags" content="languages,bias,vectors,system-versioning,claude">
+<meta name="demo-order" content="-1">
+<title>Language Mirror · one story, every Wikipedia</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm">
+<link rel="stylesheet" href="kielipeili.css?v=1794717259">
+</head>
+<body>
+<nav class="stickynav" id="stickynav" aria-label="Sections">
+  <div class="sn-row">
+    <span class="sn-title" id="snTitle"></span>
+    <span class="sn-flags" id="snFlags"></span>
+  </div>
+  <div class="sn-links" id="snLinks">
+    <a href="#overview" data-go="overview">Overview</a><a href="#disagreements" data-go="disagreements">Disagreements</a><a href="#compare" data-go="compare">Compare</a><a href="#history" data-go="history">Over time</a><a href="#details" data-go="details">Details</a>
+  </div>
+</nav>
+<div class="frame">
+
+  <header class="hero">
+    <video class="hero-globe" aria-hidden="true" autoplay muted loop playsinline preload="auto"
+      poster="media/hero-globe-poster.webp?v=1794714148" disablepictureinpicture>
+      <source src="media/hero-globe-1980.av1.mp4?v=1794714148" type='video/mp4; codecs="av01.0.08M.08"' media="(min-width: 900px) and (min-resolution: 1.5dppx)">
+      <source src="media/hero-globe-1320.av1.mp4?v=1794714148" type='video/mp4; codecs="av01.0.05M.08"' media="(min-width: 700px)">
+      <source src="media/hero-globe-1320.h264.mp4?v=1794714148" type='video/mp4; codecs="avc1.640020"' media="(min-width: 700px)">
+      <source src="media/hero-globe-990.h264.mp4?v=1794714148" type='video/mp4; codecs="avc1.64001F"'>
+    </video>
+    <script>matchMedia("(prefers-reduced-motion: reduce)").matches && document.querySelector(".hero-globe").pause();</script>
+    <div class="hero-top">
+      <span></span>
+    </div>
+    <h1>One story,<br><span class="six">six <img class="hglobe" src="img/wikipedia-globe-disc.png" alt=""><span class="hwm"><img src="img/wordmark-en.svg" alt="Wikipedia"><span class="pl">s</span></span></span></h1>
+    <p class="lede">See how each language's Wikipedia tells the same story, and where they disagree.</p>
+    <form class="loadform" id="loadForm" autocomplete="off">
+      <label class="pill-select"><select id="topic" aria-label="Loaded articles"></select></label>
+      <input id="loadQ" type="text" placeholder="or load any article: title or URL" aria-label="Wikipedia article">
+      <button type="submit">Load</button>
+    </form>
+    <div class="examples" id="examples">Try
+      <button type="button" data-q="https://uk.wikipedia.org/wiki/Степан_Бандера">Stepan Bandera</button>
+      <button type="button" data-q="https://et.wikipedia.org/wiki/Harald_Nugiseks">Harald Nugiseks</button>
+    </div>
+    <div class="prog" id="loadProg" hidden>
+      <div class="prog-head"><b id="progTitle">Loading</b><span class="prog-time" id="progTime"></span></div>
+      <div class="prog-bar"><i id="progBar"></i></div>
+      <ol class="prog-steps" id="progSteps"></ol>
+      <span id="progText" hidden></span>
+    </div>
+    <div class="stats" id="heroStats" hidden></div>
+  </header>
+  <nav class="pagetabs" id="pagetabs" aria-label="Pages"><a href="#overview" data-go="overview">Overview</a><a href="#disagreements" data-go="disagreements">Disagreements</a><a href="#compare" data-go="compare">Compare</a><a href="#history" data-go="history">Over time</a><a href="#details" data-go="details">Details</a></nav>
+
+  <main>
+    <section id="overview" class="overview" data-page="overview">
+      <div class="ovhead">
+        <div>
+          <h2>Scores</h2>
+        </div>
+        <details class="method" id="method">
+          <summary>How the score works</summary>
+          <p class="hint" id="editionsLine"></p>
+          <div id="methodBody"></div>
+        </details>
+      </div>
+      <div class="card kpis" id="kpis"></div>
+    </section>
+
+    <section class="analysis" id="analysis" data-page="overview">
+      <h2 class="sec-h">How the score is made</h2>
+    <section class="grid3">
+      <article class="card" id="timeCard">
+        <div class="card-head"><h3>Coverage over time</h3><span class="hint">read <code>FOR SYSTEM_TIME AS OF</code> 1 Jan</span></div>
+        <svg id="timeline"></svg>
+      </article>
+      <article class="card">
+        <div class="card-head"><h3>What the index is made of</h3><span class="hint">coverage · agreement · sourcing</span></div>
+        <div id="agree" class="breakdown"></div>
+      </article>
+      <article class="card">
+        <div class="card-head"><h3>Kinds of disagreement</h3><span class="hint" id="mixLang"></span></div>
+        <div id="mix" class="mix"></div>
+      </article>
+    </section>
+    </section>
+
+    <section class="card" id="conflicts" data-page="disagreements">
+      <div class="card-head"><h3>Where they disagree</h3>
+        <span class="hint" id="confHint"></span></div>
+      <p class="report" id="report"></p>
+      <div class="filters" id="confFilters"></div>
+      <div id="confList"></div>
+    </section>
+
+
+
+
+
+    <section class="card mirror" id="mirror" data-page="compare">
+      <div class="card-head"><h3>The mirror <span class="count">lines join paragraphs that say the same thing</span></h3>
+        <span class="mleg" id="mleg"></span></div>
+      <div class="mwrap"><svg id="mirrorSvg"></svg></div>
+      <p class="hint mhint" id="mhint">Click any paragraph to read it in English. Grey: no counterpart in the other edition.</p>
+      <div class="para" id="paraPanel" hidden></div>
+    </section>
+
+    <section class="card compare" id="compare" data-page="compare">
+      <div class="compare-head">
+        <div>
+          <h2 id="cTitle">Side by side</h2>
+          <p id="summary" class="summary"></p>
+        </div>
+        <div class="ctrls"><div class="pairpick" id="pairpick"></div><div class="filters" id="filters"></div><div class="seg" id="views"></div></div>
+      </div>
+      <div class="colheads" id="colheads"></div>
+      <div id="rows"></div>
+    </section>
+
+
+
+
+    <section class="card" id="story" data-page="history">
+      <div class="card-head"><h3>How it changed over time <span class="count">from snapshots read <code>FOR SYSTEM_TIME AS OF</code> 1 January each year</span></h3>
+        <span class="hint" id="storyBy"></span></div>
+      <div class="growth" id="growth"></div>
+      <p class="story-head" id="storyHead"></p>
+      <ol class="story-list" id="storyList"></ol>
+    </section>
+
+
+    <section class="card" id="resemble" data-page="history">
+      <div class="card-head"><h3>Who resembles whom <span class="count">every language against every other, through time</span></h3>
+        <span class="hint">cell = share of the row's article that has a counterpart in the column's · read <code>FOR SYSTEM_TIME AS OF</code></span></div>
+      <div class="rgrid">
+        <div><div class="yearbar" id="yearbar"></div><div id="heat"></div></div>
+        <div id="moves" class="moves"></div>
+      </div>
+    </section>
+
+    <details class="more" id="more" open data-page="details">
+      <summary><span class="more-t">Details</span><span class="more-s">what only one edition tells, aligned paragraphs and the SQL</span></summary>
+      <div class="more-body">
+
+
+    <section class="grid2" id="only">
+      <article class="card"><div class="card-head"><h3 id="onlyFiTitle">Only in Finnish</h3></div><div id="onlyFi"></div></article>
+      <article class="card"><div class="card-head"><h3 id="onlyOtherTitle">Only in the other</h3></div><div id="onlyOther"></div></article>
+    </section>
+
+    <section class="card" id="paragraphs">
+      <details>
+        <summary class="card-head"><h3>Aligned paragraphs <span class="count" id="nPairs"></span></h3>
+          <span class="hint">mutual nearest neighbours by bge-m3 vector distance in MariaDB</span></summary>
+        <div id="pairs"></div>
+      </details>
+    </section>
+
+    <section class="card" id="sql">
+      <details>
+        <summary class="card-head"><h3><img class="logo" src="img/logos/mariadb.png" alt="" width="18" height="18">The SQL</h3><span class="hint">one statement compares two languages at any moment</span></summary>
+        <pre id="sqlText"></pre>
+      </details>
+    </section>
+      </div>
+    </details>
+
+    <p class="foot">No language edition is treated as the truth: each is scored against what most editions tell and against its own
+      cited sources. Paragraph matching: bge-m3 vectors, cosine ≥ <span id="tau">0.6</span>, computed in MariaDB over a system-versioned table.
+      Every quote shown is checked word for word against the stored article text.</p>
+  </main>
+</div>
+<div class="tip" id="tip" hidden></div>
+<script type="module" src="kielipeili.js?v=1794717259"></script>
+</body>
+</html>

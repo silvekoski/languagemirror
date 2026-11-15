@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="demo-title" content="Link Web 3D">
+<meta name="demo-desc" content="Every [[wikilink]] between Finnish history articles, re-read with FOR SYSTEM_TIME AS OF at six moments 2006 → today: watch scattered islands knit into one web.">
+<meta name="demo-tags" content="3D,graph,time travel">
+<meta name="demo-order" content="11">
+<title>Link Web 3D — Wikipedia Through Time</title>
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="linkweb.css">
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div id="labels"></div>
+<div id="loading">Reading six snapshots of the link web…</div>
+
+<header class="topbar" id="top">
+  <a class="home" href="/">Wikipedia Through Time</a>
+  <span class="sep">/</span><span class="here">Link Web 3D</span>
+  <span class="grow"></span>
+  <input id="search" type="search" placeholder="Find an article…" autocomplete="off">
+  <div id="results" class="panel"></div>
+</header>
+
+<aside id="story" class="panel">
+  <h1 id="headline">Link Web</h1>
+  <p class="asof" id="kicker">The link web as of —</p>
+  <p class="lede" id="lede"></p>
+  <div class="stats" id="stats"></div>
+  <div class="note" id="note"></div>
+  <div class="legend">
+    <div class="lg"><i class="ln new"></i>new since last snapshot</div>
+    <div class="lg"><i class="ln old"></i>already there</div>
+    <div class="lg"><i class="ln gone"></i>removed</div>
+    <div class="lg"><i class="dot"></i>size = incoming links</div>
+  </div>
+  <div id="topics"></div>
+  <details class="sqlbox"><summary>The SQL</summary>
+    <p class="mute small">Each snapshot is one streamed query over the system-versioned <code>article</code> table.
+      <code>REGEXP_REPLACE</code> runs inside MariaDB so only the link targets leave the server; Python resolves
+      them to article ids.</p>
+    <pre class="sql" id="sql"></pre>
+  </details>
+</aside>
+
+<aside id="detail" class="panel"></aside>
+<div id="tip" class="tip"></div>
+
+<footer id="time" class="panel">
+  <button id="play" title="Replay 2006 → today (space)">▶</button>
+  <div id="playcap">Replay<br>2006 → today</div>
+  <div id="track">
+    <div id="bars"></div>
+    <input id="slider" type="range" min="0" max="5" step="1" value="5" aria-label="Snapshot">
+    <div id="years"></div>
+  </div>
+</footer>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+<script type="module" src="linkweb.js"></script>
+</body>
+</html>
